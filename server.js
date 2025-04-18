@@ -6,6 +6,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const pool = require('/root/fakeAI/db.js');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,11 +17,11 @@ const limiter = rateLimit({
 });
 
 app.use(express.json({ limit: '10kb' }));
-app.use(express.json());//解析JSON请求
 app.use(cors());//允许跨域请求
 app.use(helmet());
 app.use(morgan('combined'));
 app.use(limiter);
+
 
 const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -73,8 +74,8 @@ app.post('/api/login',async(req,res,next) => {
             return res.status(401).json({error:'该邮箱未注册'});
         }
         const user = users[0];
-        const validePassword = await bcrypt.compare(password,user.password);
-        if(!validePassword) {
+        const validPassword = await bcrypt.compare(password,user.password);
+        if(!validPassword) {
             return res.status(401).json({error:'邮箱或密码错误'});
         }
 
@@ -101,8 +102,17 @@ app.get('/api/me',async (req,res,next) => {
         next(error);
     }
 })
+app.use(express.static(path.join(__dirname,'dist')));
+app.get('/',(req,res) => {
+	const filePath = path.join(__dirname,'dist','fakeAI.html');
+	console.log('serving file from:',filePath);
+	res.sendFile(filePath);
+})
 
-app.use(express.static('dist'));
+const server = app.listen(PORT,'0.0.0.0',() =>{
+    console.log(`server running on port ${PORT}`);
+})
+
 
 app.use((err,req,res,next)=>{
     if(!err) {
@@ -125,13 +135,11 @@ app.use((err,req,res,next)=>{
     res.status(500).json({error:"服务器内部错误"});
 })
 
+
 app.use((req,res) => {
     res.status(404).json({error:'路由不存在'});
 })
 
-const server = app.listen(PORT,() =>{
-    console.log(`server running on port ${PORT}`);
-})
 
 process.on('SIGTERM',() => {
     console.log('SIGTERM signal recieved:closing HTTP server');
