@@ -1,0 +1,568 @@
+html{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    font-size: 100%;
+    width:100vw;
+    height:100vh;
+}
+/* 侧边栏样式 */
+aside{
+    position: absolute;
+    top:0;
+    left:0;
+    height:100vh;
+    width:20vw;
+    background-color: rgb(246, 246, 246);
+}
+    
+    /* AI头像与名字样式 */
+section.AI{
+    width:100%;
+    height:4rem;
+    border:1px solid rgb(0,0,0,0);
+}
+img.head{
+    height:2rem;
+    margin-top: 1rem;
+    float:left;
+    border-radius:3rem;
+    object-fit:cover;
+}
+p.name{
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top:1.4rem;
+    text-align: left;
+}
+
+
+    /* 菜单栏样式 */
+aside section {
+    top:3rem;
+    height:2.2rem;
+    border:2px solid rgb(0,0,0,0);
+    border-radius: 0.8rem;
+}
+aside div > section img{
+    margin-top: 0.5rem;
+    height:1.2rem;
+    float:left;
+}
+aside section p{
+    text-align: left;
+    font-size: 1rem;
+    margin-top: 0.475rem;
+    margin-bottom:0.6rem;
+}
+aside div > section{
+    margin:2px;
+}
+.about{
+    position:absolute;
+    width:19vw;
+    margin-top:calc(100vh - 4rem - 1.5rem);
+}
+.arraw{
+    float:right;
+}
+
+
+.newConversation{
+    background-color: rgb(0, 50, 255,0.1);
+    ;
+    color:rgb(0, 50, 255);
+}
+.newConversation:hover{
+    background-color: rgb(0, 50, 255,0.15);
+    cursor:pointer;
+}
+.menu{
+    background-color: rgba(168, 162, 162, 0);
+}
+.menu:hover{
+    background-color: rgba(168, 162, 162, 0.15);
+    cursor:pointer;
+}
+.allConversation section:nth-child(1){
+    background-color: rgba(255,255,255,1);
+    box-shadow: 2px 0px 5px rgba(0,0,0,0.1);
+    color:rgba(0,0,0,1);
+    font-weight: bold;
+}
+
+.menu1 div{
+    display:;
+}
+
+/* 顶部用户界面 */
+header{
+    position:relative;
+    z-index: 1;
+    top:0;
+    left:20vw;
+    width:80vw;
+    height:4rem;
+    border:1px solid rgb(0,0,0,0);
+    background-color: white;
+    display:flex;
+    justify-content: flex-end;
+}
+header nav{
+    position:relative;
+    right:15px;
+}
+header nav ul{
+    flex-direction: column;
+    list-style: none;
+    margin:0;
+    padding:0 1rem;
+    justify-content: space-around;
+    align-items: left;
+    width:6em;
+    height:10%;
+}
+header nav ul li{
+    display:none;
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    border:1px solid rgb(0,0,0,0);
+    cursor:pointer;
+}
+header nav ul li img{
+    height:1.2rem;
+    float:left;
+}
+.logo:hover{
+    cursor: pointer !important;
+}
+
+/* AI主体界面 */
+main{
+    position: absolute;
+    top:0;
+    left:20vw;
+    width:80vw;
+    height:100vh;
+    border:1px solid rgb(0,0,0,0);
+    
+}
+div.main{
+    position: absolute;
+    top:10%;
+    left:5%;
+}
+.ad{
+    border:1px solid rgb(0,0,0,0);
+    width:300px;
+    height:50px;
+    border-radius: 20px;
+    background:linear-gradient(to right ,rgba(95, 44, 250, 0.2) ,rgba(255, 123, 0, 0.2));
+    text-align: center;
+    font-weight: 600;
+    display:;
+}
+.cancel{
+    position: relative;
+    left:150px;
+    bottom:60px;
+    width:14px;
+    height:14px;
+    font-size: 12px;
+    border-radius: 50%;
+    text-align: center;
+    margin:0;
+    line-height: 14px;
+    padding:0;
+    border:none;
+    background-color: black;
+    color:white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.cancel:hover{
+    cursor:pointer;
+}
+.ad:hover{
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    cursor:pointer;
+}
+div.mainFunction{
+    width:65vw;
+    height:60vh;
+    display:flex;
+    flex-wrap:wrap;
+    align-items: center;
+    justify-content:space-around;
+    border:1px solid rgb(0,0,0,0);
+}
+div.mainFunction section{
+    width:45%;
+    height:25%;
+    border:1px solid rgb(0,0,0,0.2);
+    border-radius: 20px;
+}
+
+main div > section img{
+    margin-top: 1rem;
+    margin-left:0.5rem;
+    height:1.5rem;
+    float:left;
+}
+main div > section img + p{
+    font-weight: 600;
+}
+p[class$="Content"]{
+    margin-left:2rem;
+    color:rgb(0,0,0,0.5)
+}
+
+div.mainFunction section:hover{
+    box-shadow: 2px 5px 10px rgba(0,0,1,0.1);
+    cursor:pointer;
+}
+
+/* 底部样式 */
+footer{
+    position: absolute;
+    left:20vw;
+    top:90vh;
+    background-color: white;
+}
+div.bottom{
+    position: absolute;
+    left:5vw;
+}
+.bottomFunction{
+    display:flex;
+    width:60vw;
+    left:5%;
+    align-items: center;
+    justify-content:space-around;
+}
+.bottomFunction section{
+    text-align: center;
+    width:10vw;
+    height:3vh;
+    border:1px solid rgb(0,0,0,0.2);
+    border-radius: 12px;
+    background-color: rgb(0, 50, 255,0);
+}
+.bottomFunction section:hover{
+    background-color: rgb(0, 50, 255,0.05);
+    cursor:pointer;
+}
+.bottomFunction section p{
+    margin:0;
+    margin-top: calc((3vh - 20px)/2);
+    font-size: 15px;
+}
+div.searchBox{
+    display:flex;
+    justify-content:space-between;
+    /* justify-content: center; */
+    align-items: center;
+    margin-top:1vh;
+    height:5vh;
+    width:70vw;
+    border:1px solid rgb(0,0,0,0.2);
+    border-radius: 15px;
+    box-shadow: 5px 0 10px rgba(0,0,0,0.1);
+}
+.searchBox img{
+    margin-top:1vh;
+    height:3vh;
+}
+.input{
+    width:50vw;
+    height:3vh;
+    border:none;
+}
+.input:focus{
+    outline:none;
+}
+div.explain{
+    position:absolute;
+    left:-1.5em;
+    top:-8em;
+    font-size: 10px;
+    width:10em;
+    background-color: rgb(0,0,0,0.8);
+    border-radius: 1vw;
+    color:whitesmoke;
+    border-radius: 5px;
+    display:none;
+}
+.searchBox section:hover img{
+    background-color: rgb(0,0,0,0.1);
+    cursor:pointer;
+    border-radius: 50%;
+}
+.searchBox section:hover div.explain{
+    display:initial;
+}
+
+/* 发送按钮样式 */
+.send{
+    height:3vh;
+    width:3vh;
+    font-size:3vh;
+    border-radius:50%;
+    border:none;
+    color:white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.send:disabled{
+    background-color: rgba(160, 161, 161, 0.5);
+    cursor:not-allowed;
+}
+.send:enabled{
+    background-color: rgba(32, 76, 255, 0.911);
+    cursor:pointer;
+}
+img.sendImg{
+    margin:0;
+    padding:0;
+    height:2vh;
+    width:2vh;
+}
+
+/* 推理模式样式 */
+#reasoner {
+    display: flex;
+    height: 30px;       /* 固定高度 */
+    width: 50px;        /* 固定宽度 */
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.8);  /* 提高对比度 */
+    font-size: 16px;
+    border: 2px solid transparent;
+    border-radius: 5px;         /* 固定圆角 */
+    background-color: rgba(30, 191, 240, 0.666); /* 默认启用状态 */
+    cursor: pointer;
+    transition: all 0.2s ease;  /* 平滑过渡 */
+}
+
+/* 禁用状态 */
+#reasoner.close {
+    background-color: rgba(30, 191, 240, 0.333);
+    color: rgba(0, 0, 0, 0.4);  /* 禁用状态文字变淡 */
+}
+
+/* 悬停时的效果 */
+#reasoner:hover:not(.close) {
+    background-color: rgba(30, 191, 240, 0.8);
+    border-color: rgba(0, 0, 0, 0.2); /* 悬停显示边框 */
+    transform: scale(1.05);     /* 轻微放大 */
+}
+
+/* 按钮按下时缩小 */
+#reasoner:active {
+    transform: scale(0.95);
+}
+
+.allConversation{
+    width:15vw;
+    margin-left: 4vw;
+    flex-wrap: wrap;
+    align-items: right;
+    justify-content:space-around;
+    display:none;
+}
+.allConversation section{
+    flex:1 15vw;
+    height:3vh;
+    border:1px solid rgb(0,0,0,0);
+    border-radius: 5px;
+}
+.allConversation section p{
+    width:15vw;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size:15px;
+    color:rgb(0,0,0,0.7);
+    margin:0;
+    margin-top: calc((3vh - 20px)/2);
+    text-align: left;
+}
+.allConversation section:hover{
+    background-color: rgba(168, 162, 162, 0.15);
+    cursor:pointer;
+}
+
+.loginAndSignup{
+    position: relative;
+    z-index: 1000000;
+    display:none;
+    align-items: center;
+    justify-content:space-around;
+    width:100%;
+    height:100%;
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: rgba(0,0,0,0.2);
+}
+
+/* 登录 */
+.login{
+    display:flex;
+    justify-content:space-around;
+    align-items: center;
+    position: absolute;
+}
+h4{
+    padding:0 5px 2px 5px;
+    margin:0;
+}
+.loginBtn{
+    margin:5px;
+    margin-left:30%;
+}
+div form p{
+    margin:0;
+    font-size:14px;
+}
+div form p a.forget{
+    font-size: 13px;;
+}
+.forget{
+    font-size: 12px;
+    margin-left: 3em;
+}
+
+/* 注册 */
+.signup{
+    display:flex;
+    justify-content:space-around;
+    align-items: center;
+    position: absolute;
+    display: none;
+}
+
+.signupBtn{
+    margin:5px;
+    margin-left:30%;
+}
+.login,
+.signup{
+    width:25em;
+    height:18em;
+    background-color: rgba(255,255,255);
+    border-radius: 20px;
+}
+.closeLogin,
+.closeSignup{
+    position: absolute;
+    top:0;
+    right:0;
+    border:none;
+    border-radius: 0 5px 0 5px;
+}
+.close:hover{
+    cursor:pointer;
+}
+.userName{
+    border-bottom:2px dotted  rgb(0, 50, 255);
+}
+.userName:hover{
+    cursor:pointer;
+    color:rgb(0, 50, 255);
+}
+
+form div {
+    display:flex;
+    width:20em;
+    height:2em;
+    align-items: center;
+    border:1px solid rgb(0,0,0,0.5);
+    background-color: white;
+}
+form input:focus{
+    outline:none;
+}
+.signup form div:nth-child(2),
+.login form div:nth-child(2){
+    border-radius: 10px 10px 0 0;
+}
+.signup form div:nth-child(4),
+.login form div:nth-child(3){
+    border-radius: 0 0 10px 10px;
+}
+.signup form div input,
+.login form div input{
+    border:none;
+    background-color: transparent;
+    width:50%;
+
+}
+.signupBtn,
+.loginBtn{
+    width:7em;
+    height:1.6em;
+    border:none;
+    border-radius: 10px;
+    font-size:1.2em;
+    color:white;
+}
+.signupBtn:hover,
+.loginBtn:hover{
+    background-color: rgb(189, 233, 252);
+}
+.signupBtn:disabled,
+.loginBtn:disabled{
+    background-color: rgb(160, 161, 161);
+    cursor:not-allowed;
+}
+
+.signupBtn:enabled,
+.loginBtn:enabled{
+    background-color: rgb(164, 227, 254);
+    cursor:pointer;
+}
+#loginError,
+#signupError{
+    padding-left: 5px;
+    color:red;
+    font-size:10px;
+}
+.wrong{
+    color:red;
+    font-size:10px;
+}
+
+/* 聊天框样式 */
+.chat-box{
+    width:80vw;
+    height:calc(90vh - 4rem);
+    top:4rem;
+    left:20vw;
+    position: absolute;
+    display:none;
+    flex-direction: column;
+    border:2px solid rgb(0,0,0,1);
+    border-radius: 10px;
+    background-color: white;
+}
+.chatWindow{
+    flex:1;
+    padding:10px;
+    overflow-y: auto;
+}
+.chat-message{
+    margin:10px 0
+}
+.chat-massage.user{
+    text-align: right;
+}
+.chat-massage.bot {
+    text-align: left;
+}
+
+/* 弹出对话框 */
