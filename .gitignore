@@ -3,7 +3,7 @@
 *.env.*
 
 #依赖目录
-mode_modules/
+node_modules/
 
 *.log
 npm-debug.log*
