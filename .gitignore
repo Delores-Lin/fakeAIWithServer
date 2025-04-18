@@ -1,0 +1,15 @@
+#环境文件
+.env
+*.env.*
+
+#依赖目录
+mode_modules/
+
+*.log
+npm-debug.log*
+
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/
