@@ -1,5 +1,3 @@
-import {OpenAI} from 'openai';
-import {marked} from 'marked';
 
 
 // 实现最近对话的收起和展开
@@ -296,80 +294,31 @@ function clearChatHistory() {
     chatHistory = [];
     chatWindow.innerHTML = "";
     chat = [];
-}
 
 
-const openai = new OpenAI({
-    baseURL : 'https://api.deepseek.com',
-    apiKey: '',
-    dangerouslyAllowBrowser: true,
-})
+// const openai = new OpenAI({
+//     baseURL : 'https://api.deepseek.com',
+//     apiKey: '',
+//     dangerouslyAllowBrowser: true,
+// })
 
-// 进行单轮对话
-async function getDeepSeekV3(chat){
-    const completion = await openai.chat.completions.create({
-        messages:chat,
-        model:"deepseek-chat",
-    });
-    let messages = completion.choices[0].message.content;
-    return messages;
-}
+// // 进行单轮对话
+// async function getDeepSeekV3(chat){
+//     const completion = await openai.chat.completions.create({
+//         messages:chat,
+//         model:"deepseek-chat",
+//     });
+//     let messages = completion.choices[0].message.content;
+//     return messages;
+// }
 
-//推理模式
-async function getDeepSeekR1(chat){
-    const completion = await openai.chat.completions.create({
-        model:"deepseek-reasoner",
-        messages:chat,
-    })
-    let reasoningContent = await completion.choices[0].message.reasoning_content;
-    let content = await completion.choices[0].message.content;
-    return [reasoningContent,content];
-}
-
-var client_id = '59eee7863e184c0fb31ba10e24d2b480';
-var redirect_uri = 'http://localhost:3000/';
-
-var app = express();
-
-app.get('/login', function(req, res) {
-
-    var state = generateRandomString(16);
-    var scope = 'user-read-private user-read-email';
-
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: client_id,
-            scope: scope,
-            redirect_uri: redirect_uri,
-            state: state
-        })
-    );
-});
-
-app.get('/callback', function(req, res) {
-
-    var code = req.query.code || null;
-    var state = req.query.state || null;
-
-    if (state === null) {
-        res.redirect('/#' +
-            querystring.stringify({
-            error: 'state_mismatch'
-        }));
-    } else {
-        var authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        form: {
-            code: code,
-            redirect_uri: redirect_uri,
-            grant_type: 'authorization_code'
-        },
-        headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-        },
-        json: true
-        };
-    }
-});
+// //推理模式
+// async function getDeepSeekR1(chat){
+//     const completion = await openai.chat.completions.create({
+//         model:"deepseek-reasoner",
+//         messages:chat,
+//     })
+//     let reasoningContent = await completion.choices[0].message.reasoning_content;
+//     let content = await completion.choices[0].message.content;
+//     return [reasoningContent,content];
+// }
