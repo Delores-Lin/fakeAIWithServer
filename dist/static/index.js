@@ -294,7 +294,7 @@ function clearChatHistory() {
     chatHistory = [];
     chatWindow.innerHTML = "";
     chat = [];
-
+}
 
 // const openai = new OpenAI({
 //     baseURL : 'https://api.deepseek.com',
