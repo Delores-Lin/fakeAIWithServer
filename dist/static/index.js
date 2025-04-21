@@ -1,4 +1,3 @@
-const { application, json } = require("express");
 
 
 // 实现最近对话的收起和展开
@@ -123,7 +122,7 @@ const signupPage = document.querySelector(".login");
 
 async function registerServer(username,email,password){
     try{
-        const response = await fetch('https//delolin.me//api/register',{
+        const response = await fetch('api/register',{
             method:'POST',
             headers:{
                 'Content-Type': 'application/json',
@@ -161,7 +160,7 @@ const loginBtn = document.querySelector(".loginBtn");
 
 async function loginServer(email,password) {
     try{
-        const response = await fetch('https//delolin.me/api/login',{
+        const response = await fetch('api/login',{
             method:"POST",
             headers:{
                 'content-Type' : 'application/json',
@@ -173,10 +172,12 @@ async function loginServer(email,password) {
         })
         const data = await response.json();
 
-        if(!response.ok){
+        if(response.ok){
             alert("登录成功！");
-            userName.innerHTML = data.username;
+    	    const loginAndSignup = document.querySelector(".loginAndSignup");
             loginAndSignup.style.display = "none";
+            const userName = document.querySelector(".userName");
+	    userName.innerHTML = data.userName;
             localStorage.setItem('token',data.token);
         }
         else if(response.status == 401){
@@ -195,9 +196,8 @@ loginBtn.addEventListener("click", function (event) {
     const loginEmail = document.querySelector(".loginEmail").value;
     const loginPassword = document.querySelector(".loginPassword").value;
     const wrong = document.querySelector(".wrong");
-    const userName = document.querySelector(".userName");
-    const loginAndSignup = document.querySelector(".loginAndSignup");
-    loginServer(userName,loginEmail,loginPassword);
+    loginServer(loginEmail,loginPassword);
+
 });
 // if (logged === "true") {
 // const logged = localStorage.getItem("isLoggedIn");

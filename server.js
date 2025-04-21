@@ -31,7 +31,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(cors());//允许跨域请求
 app.use(helmet());
 app.use(morgan('combined'));
-app.use(limiter);
+//app.use(limiter);
 
 
 const validateEmail = (email) => {
