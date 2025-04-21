@@ -47,7 +47,7 @@ const generateToken = (userId) => {
 //用户注册
 app.post('/api/register',async(req,res,next) => {
     try {
-        const {email,password} = req.body;
+        const {email,password,username} = req.body;
 	console.log('邮箱和密码：',email,password);
         if(!email || !password) {
             return res.status(400).json({error:'邮箱或密码为空'});
@@ -64,11 +64,15 @@ app.post('/api/register',async(req,res,next) => {
         }
         const hashedPassword = await bcrypt.hash(password,10);
         const [result] = await pool.query(
-            'insert into users (email,password) values (?,?)',
-            [email,hashedPassword]
+            'insert into users (username,email,password) values (?,?,?)',
+            [username,email,hashedPassword]
         );
         const token = generateToken(result.insertId);
-        res.status(201).json({userId:result.insertId,token});
+        res.status(201).json({
+            userId:result.insertId,
+            username:username,
+            token:token,
+        });
     }catch(error) {
         next(error);
     }
@@ -87,11 +91,15 @@ app.post('/api/login',async(req,res,next) => {
         const user = users[0];
         const validPassword = await bcrypt.compare(password,user.password);
         if(!validPassword) {
-            return res.status(401).json({error:'邮箱或密码错误'});
+            return res.status(402).json({error:'邮箱或密码错误'});
         }
 
         const token = generateToken(user.id);
-        res.json({userId: user.id,token});
+        res.json({
+            userId: user.id,
+            userName: user.username,
+            token:token
+        });
     }catch(error){
         next(error);
     }

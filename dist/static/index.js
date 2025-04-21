@@ -1,3 +1,4 @@
+const { application, json } = require("express");
 
 
 // 实现最近对话的收起和展开
@@ -117,49 +118,86 @@ checkButton(".loginBtn", ".loginEmail", ".loginPassword");
 checkButton(".signupBtn", ".signupEmail", ".signupPassword");
 
 //实现注册
+const registerPage = document.querySelector(".signup");
+const signupPage = document.querySelector(".login");
+
+async function registerServer(username,email,password){
+    try{
+        const response = await fetch('https//delolin.me//api/register',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                username:username,
+                email:email,
+                password:password
+            })
+        })
+        const data = await response.json();
+        if(response.ok){
+            console.log("注册成功!");
+            registerPage.style.display = "none";
+            signupPage.style.display = "flex";
+        }
+        else if(response.status == 409){
+            const error = document.querySelector("#signupError");
+            error.innerHTML = "*该邮箱已被注册";
+        }
+    }catch(error){
+        console.error(error);
+    }
+}
 const signupBtn = document.querySelector(".signupBtn");
 signupBtn.addEventListener("click", function (event) {
     event.preventDefault();
     const username = document.querySelector(".username").value;
     const signupEmail = document.querySelector(".signupEmail").value;
     const signupPassword = document.querySelector(".signupPassword").value;
-    const getUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const user = getUsers.find(user => user.email === signupEmail);
-    if (user) {
-        alert("该邮箱已被注册!");
-        return;
-    }else{
-    const newUser = {
-        username: username,
-        email: signupEmail,
-        password: signupPassword
-    };
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    alert("注册成功!");
-        window.location.href = "fakeAI.html";
-    }
+    registerServer(username,signupEmail,signupPassword);
 });
 //实现登录
 const loginBtn = document.querySelector(".loginBtn");
+
+async function loginServer(email,password) {
+    try{
+        const response = await fetch('https//delolin.me/api/login',{
+            method:"POST",
+            headers:{
+                'content-Type' : 'application/json',
+            },
+            body:JSON.stringify({
+                email    : email,
+                password : password
+            })
+        })
+        const data = await response.json();
+
+        if(!response.ok){
+            alert("登录成功！");
+            userName.innerHTML = data.username;
+            loginAndSignup.style.display = "none";
+            localStorage.setItem('token',data.token);
+        }
+        else if(response.status == 401){
+            wrong.innerHTML = "*该邮箱未注册，请先注册";
+        }else if(response.status == 402){
+            wrong.innerHTML = "*邮箱或密码错误";
+        }
+    }catch(error){
+        console.log('请求失败',error);
+    }
+}
+
 loginBtn.addEventListener("click", function (event) {
     event.preventDefault();
-const getUsers = JSON.parse(localStorage.getItem("users")) || [];
-const loginEmail = document.querySelector(".loginEmail").value;
+
+    const loginEmail = document.querySelector(".loginEmail").value;
     const loginPassword = document.querySelector(".loginPassword").value;
     const wrong = document.querySelector(".wrong");
     const userName = document.querySelector(".userName");
     const loginAndSignup = document.querySelector(".loginAndSignup");
-const user = getUsers.find(user => user.email === loginEmail && user.password === loginPassword);
-if (user) {
-    alert("登录成功!");
-    userName.innerHTML = user.username;
-    loginAndSignup.style.display = "none";
-    localStorage.setItem("isLoggedIn","true")
-} else {
-    wrong.innerHTML = "*邮箱或密码错误";
-    }
+    loginServer(userName,loginEmail,loginPassword);
 });
 // if (logged === "true") {
 // const logged = localStorage.getItem("isLoggedIn");
@@ -322,3 +360,5 @@ function clearChatHistory() {
 //     let content = await completion.choices[0].message.content;
 //     return [reasoningContent,content];
 // }
+
+
