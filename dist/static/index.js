@@ -228,6 +228,35 @@ async function modifyLogStatus(){
 }
 modifyLogStatus();
 
+//退出登陆状态
+async function logoutServer(){
+    try{
+        const response = fetch("api/logout",{
+            method:"POST",
+        })
+        const result = await response.json();
+        if(result.success){
+            return true;
+        }
+    }catch(error){
+        console.log("登出错误",error);
+    }
+}
+const loginAccountBtn = document.querySelector("#loginBtn");
+const logoutAccountBtn = document.querySelector("#logoutBtn");
+logoutAccountBtn.addEventListener("click",async()=>{
+    if(await logoutServer()){
+        logoutAccountBtn.style.display = "none";
+        loginAccountBtn.style.display = "block";
+        const userName = document.querySelector(".userName");
+        userName.innerHTML = "请登录";
+    }
+})
+//完善登录窗口打开方式
+loginAccountBtn.addEventListener("click",()=>{
+    loginAndSignup.style.display = "flex";
+})
+
 //弹出对话框
 // 实现聊天页面的发送消息
 const newConversation = document.querySelector(".newConversation");
