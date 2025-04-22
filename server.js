@@ -176,13 +176,14 @@ app.get('/api/auth/check', (req, res) => {
         })
     }
     try{
-	const SECRET_KEY = process.env.JWT_SECRET;
+	    const SECRET_KEY = process.env.JWT_SECRET;
         const decoded = jwt.verify(token,SECRET_KEY);
+        const [user] = await pool.query('select username from users where id = ?',[decoded.userId]);
         res.json({ 
             isLoggedIn: true,
             user: {
                 id: decoded.userId,
-                username:req.username
+                username:user[0].username
             }
         }); 
     }catch(err) {
