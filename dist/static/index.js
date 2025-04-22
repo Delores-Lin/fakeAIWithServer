@@ -218,7 +218,7 @@ async function modifyLogStatus(){
     const status = await checkLoginStatus();
     if (status.isLoggedIn){
         const userName = document.querySelector(".userName");
-        userName.innerHTML = data.userName;
+        userName.innerHTML = status.user.username;
         const loginBtn = document.querySelector("#loginBtn");
         loginBtn.style.display = "none";
     }else{
