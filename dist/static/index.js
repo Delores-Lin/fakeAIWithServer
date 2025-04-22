@@ -197,7 +197,8 @@ loginBtn.addEventListener("click", function (event) {
     const wrong = document.querySelector(".wrong");
     const userName = document.querySelector(".userName");
     const loginAndSignup = document.querySelector(".loginAndSignup");
-    loginServer(userName,loginEmail,loginPassword);
+    loginServer(loginEmail,loginPassword);
+    
 });
 // if (logged === "true") {
 // const logged = localStorage.getItem("isLoggedIn");
