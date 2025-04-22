@@ -4,6 +4,7 @@
         <title>Fake AI</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://delolin.me/static/style.css">
+        <!-- <link rel="stylesheet" href="static/style.css"> -->
     </head>
     <body>
     <!-- 左侧导航栏 -->
@@ -116,14 +117,14 @@
             <div class="header">
             <section class="logo">
                 <img src="photos/user.svg" alt="user" class="userImg">
+                <nav class = "nav">
+                    <ul>
+                        <li id = "loginBtn"><img src="photos/entrance.svg"  alt="退出登录">登录</li>
+                        <li id = "settings"><img src="photos/settings.svg"  alt="设置">设置</li>
+                        <li id = "logoutBtn"><img src="photos/entrance.svg" alt="退出登录">退出登录</li>
+                    </ul>
+                </nav>
             </section>
-            <nav>
-                <ul>
-                    <li><img src="photos/entrance.svg" alt="退出登录">登录</li>
-                    <li><img src="photos/settings.svg" alt="设置">设置</li>
-                    <li><img src="photos/entrance.svg" alt="退出登录">退出登录</li>
-                </ul>
-            </nav>
             </div>
         </header>
     <!-- 右侧主体 -->
@@ -226,14 +227,14 @@
                 <input type="text" placeholder="发消息、输入@或/选择技能" class="input">
                 <buttom id="reasoner" class = "active">推理</buttom>
                 <button class="send" disabled><img src="photos/send.svg" alt="发送" class="sendImg"></button>
-                <section class="choose">
+                <!-- <section class="choose">
                     <div class="choose model"><p>选择模型</p></div>
                     <button class="model">···</button>
                     <ul>
                         <li>DeepSeek</li>
                     </ul>
                     
-                </section>
+                </section> -->
             </div>
         </div>
         </footer>
@@ -293,5 +294,6 @@
         </div>
         <!-- JavaScript -->
         <script type="module" src="/static/index.js"></script> 
+        <!-- <script type="module" src="static/index.js"></script>  -->
     </body>
 </html>

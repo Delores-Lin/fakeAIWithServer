@@ -1,9 +1,11 @@
-html{
+html,body{
     margin: 0;
     padding: 0;
     border: 0;
     box-sizing: border-box;
     font-size: 100%;
+    min-width: 500px ;
+    min-height:400px ;
     width:100vw;
     height:100vh;
 }
@@ -13,7 +15,9 @@ aside{
     top:0;
     left:0;
     height:100vh;
+    min-height: 400px;
     width:20vw;
+    min-width: 50px;
     background-color: rgb(246, 246, 246);
 }
     
@@ -103,41 +107,54 @@ header{
     top:0;
     left:20vw;
     width:80vw;
-    height:4rem;
+    height:20px;
     border:1px solid rgb(0,0,0,0);
     background-color: white;
     display:flex;
     justify-content: flex-end;
 }
-header nav{
+header section nav{
     position:relative;
+    display:none;
     right:15px;
 }
-header nav ul{
+header section nav ul{
+    display:flex;
     flex-direction: column;
     list-style: none;
     margin:0;
     padding:0 1rem;
     justify-content: space-around;
     align-items: left;
-    width:6em;
+    width:100%;
     height:10%;
 }
-header nav ul li{
-    display:none;
+header section nav ul li{
     margin:0;
     padding:0;
-    width:100%;
+    width:100px;
     height:100%;
     border:1px solid rgb(0,0,0,0);
     cursor:pointer;
+    font-size: small;
 }
-header nav ul li img{
+header section:hover nav{
+    display:flex;
+}
+
+header section nav ul li img{
     height:1.2rem;
     float:left;
 }
+header section nav ul li img:hover{
+    cursor:pointer;
+}
 .logo:hover{
     cursor: pointer !important;
+}
+.logo{
+    position: relative;
+    width:100px;
 }
 
 /* AI主体界面 */
@@ -147,6 +164,7 @@ main{
     left:20vw;
     width:80vw;
     height:100vh;
+    min-height: 400px;
     border:1px solid rgb(0,0,0,0);
     
 }

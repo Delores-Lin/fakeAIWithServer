@@ -177,7 +177,7 @@ async function loginServer(email,password) {
     	    const loginAndSignup = document.querySelector(".loginAndSignup");
             loginAndSignup.style.display = "none";
             const userName = document.querySelector(".userName");
-	    userName.innerHTML = data.userName;
+	        userName.innerHTML = data.userName;
             localStorage.setItem('token',data.token);
         }
         else if(response.status == 401){
@@ -199,11 +199,34 @@ loginBtn.addEventListener("click", function (event) {
     loginServer(loginEmail,loginPassword);
 
 });
-// if (logged === "true") {
-// const logged = localStorage.getItem("isLoggedIn");
-// const userImg = document.querySelector(".userImg");
-// const loggedout = document.querySelector("nav ul li:nth-child(n+2)");
-// }
+
+
+//获取登陆状态，自动登录
+async function checkLoginStatus(){
+    try{
+        const response = await fetch('api/auth/check',{
+            method:"GET",
+        })
+        const status = await response.json();
+        return status;
+    }catch(error){
+        console.error(error);
+    }
+}
+async function modifyLogStatus(){
+    const status = await checkLoginStatus();
+    if (status.isLoggedIn){
+        const userName = document.querySelector(".userName");
+        userName.innerHTML = data.userName;
+        const loginBtn = document.querySelector("#loginBtn");
+        loginBtn.style.display = "none";
+    }else{
+        const logoutBtn = document.querySelector("#logoutBtn");
+        logoutBtn.style.display = "none";
+    }
+}
+modifyLogStatus();
+
 //弹出对话框
 // 实现聊天页面的发送消息
 const newConversation = document.querySelector(".newConversation");

@@ -40,7 +40,30 @@ const validateEmail = (email) => {
 }
 
 const generateToken = (userId) => {
-    return jwt.sign({userId},process.env.JWT_SECRET,{expiresIn: '1h'});
+    return jwt.sign({userId},process.env.JWT_SECRET,{expiresIn: '7d'});
+}
+
+function validateToken(token) {
+    try {
+        const decoded = jwt.verify(token,SECRET_KEY);
+        return decoded.userId;
+    }catch(err){
+        console.error('Token验证失败',err.message);
+        return null;
+    }
+}
+
+async function getUserData(userId) {
+    try {
+        const [rows] = await pool.query(
+            'select id, username, email from users where id = ?',
+            [userId]
+        )
+        return rows[0] || null;
+    }catch(err) {
+        console.error('用户数据查询失败',err);
+        throw err;
+    }
 }
 
 
@@ -95,6 +118,14 @@ app.post('/api/login',async(req,res,next) => {
         }
 
         const token = generateToken(user.id);
+        res.cookie('authToken',token,{
+            httpOnly: true,
+            secure:true,
+            sameSite:'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            domain: 'delolin.me',
+            path: '/'
+        })
         res.json({
             userId: user.id,
             userName: user.username,
@@ -103,6 +134,36 @@ app.post('/api/login',async(req,res,next) => {
     }catch(error){
         next(error);
     }
+})
+
+//检查cookie,实现自动登录
+const authMiddleware = (req,res,next) => {
+    const token = req.cookies.authToken;
+
+    if(!token) {
+        return res.status(401).json({
+            error: '未登录'
+        })
+    }
+
+    const userId = validateToken(token);
+    if (!userId) {
+        return res.status(401).json({error:'登录已过期'})
+    }
+
+    req.userId = userId;
+    next();
+}
+
+app.post('/api/logout',(req,res) =>{
+    res.clearCookie('authToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax',
+        domain: 'delolin.me',
+        path: '/'
+    });
+    res.json({success: true});
 })
 
 app.get('/api/me',async (req,res,next) => {
@@ -121,6 +182,18 @@ app.get('/api/me',async (req,res,next) => {
         next(error);
     }
 })
+
+app.get('/api/auth/check', authMiddleware, (req, res) => {
+  // authMiddleware 已通过 Cookie 验证用户
+    res.json({ 
+        isLoggedIn: true,
+        user: {
+        id: req.userId,
+        username:req.username
+        }
+    }); 
+});
+
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{
 	const filePath = path.join(__dirname,'dist','fakeAI.html');
