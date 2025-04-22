@@ -31,6 +31,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(cors());//允许跨域请求
 app.use(helmet());
 app.use(morgan('combined'));
+app.use(cookieParser());
 //app.use(limiter);
 
 
@@ -136,25 +137,6 @@ app.post('/api/login',async(req,res,next) => {
     }
 })
 
-//检查cookie,实现自动登录
-const authMiddleware = (req,res,next) => {
-    const token = req.cookies.authToken;
-
-    if(!token) {
-        return res.status(401).json({
-            error: '未登录'
-        })
-    }
-
-    const userId = validateToken(token);
-    if (!userId) {
-        return res.status(401).json({error:'登录已过期'})
-    }
-
-    req.userId = userId;
-    next();
-}
-
 app.post('/api/logout',(req,res) =>{
     res.clearCookie('authToken', {
         httpOnly: true,
@@ -183,15 +165,27 @@ app.get('/api/me',async (req,res,next) => {
     }
 })
 
-app.get('/api/auth/check', authMiddleware, (req, res) => {
-  // authMiddleware 已通过 Cookie 验证用户
-    res.json({ 
-        isLoggedIn: true,
-        user: {
-        id: req.userId,
-        username:req.username
-        }
-    }); 
+app.get('/api/auth/check', (req, res) => {
+    const token = req.cookies.auth_token;
+    if(!token){
+        return res.json({
+            isLoggedIn: false
+        })
+    }
+    try{
+        const decoded = jwt.verify(token,SECRET_KEY);
+        res.json({ 
+            isLoggedIn: true,
+            user: {
+                id: decoded.userId,
+                username:req.username
+            }
+        }); 
+    }catch(err) {
+        return res.json({
+            isLoggedIn:false
+        });
+    }
 });
 
 app.use(express.static(path.join(__dirname,'dist')));
