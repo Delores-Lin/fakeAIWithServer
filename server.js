@@ -18,6 +18,7 @@ const limiter = rateLimit({
 const https = require('https');
 const http  = require('http');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
 
 const options = {
 	key: fs.readFileSync('/etc/letsencrypt/live/delolin.me/privkey.pem'),
@@ -28,7 +29,7 @@ https.createServer(options,app).listen(443,() =>{
 });
 
 app.use(express.json({ limit: '10kb' }));
-app.use(cors());//允许跨域请求
+app.use(cors({credentials: true}));//允许跨域请求
 app.use(helmet());
 app.use(morgan('combined'));
 app.use(cookieParser());
@@ -166,13 +167,16 @@ app.get('/api/me',async (req,res,next) => {
 })
 
 app.get('/api/auth/check', (req, res) => {
-    const token = req.cookies.auth_token;
+    const token = req.cookies.authToken;
+    
     if(!token){
+	console.log(token);
         return res.json({
             isLoggedIn: false
         })
     }
     try{
+	const SECRET_KEY = process.env.JWT_SECRET;
         const decoded = jwt.verify(token,SECRET_KEY);
         res.json({ 
             isLoggedIn: true,
@@ -182,6 +186,7 @@ app.get('/api/auth/check', (req, res) => {
             }
         }); 
     }catch(err) {
+	console.log(err);
         return res.json({
             isLoggedIn:false
         });

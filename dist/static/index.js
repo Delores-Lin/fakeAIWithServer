@@ -206,6 +206,7 @@ async function checkLoginStatus(){
     try{
         const response = await fetch('api/auth/check',{
             method:"GET",
+	    credentials: 'include'
         })
         const status = await response.json();
         return status;
