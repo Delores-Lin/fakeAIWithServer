@@ -166,7 +166,7 @@ app.get('/api/me',async (req,res,next) => {
     }
 })
 
-app.get('/api/auth/check', (req, res) => {
+app.get('/api/auth/check',async (req, res) => {
     const token = req.cookies.authToken;
     
     if(!token){
