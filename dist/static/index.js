@@ -134,8 +134,9 @@ async function registerServer(username,email,password){
             })
         })
         const data = await response.json();
-        if(response.ok){
-            console.log("注册成功!");
+        if(data.success = true){
+            console.log("验证邮件已发送，请前往邮箱查收，即可完成注册");
+            alert("[验证邮件已发送!]请前往邮箱查收，即可完成注册");
             registerPage.style.display = "none";
             signupPage.style.display = "flex";
         }

@@ -87,21 +87,101 @@ app.post('/api/register',async(req,res,next) => {
         if(existingUsers.length > 0){
             return res.status(409).json({error:'邮箱已被注册'});
         }
+        const emailToken = jwt.sign(
+            {email: req.body.email},
+            process.env.JWT_SECRET,
+            {expiresIn:'1h'}
+        );
+        const expiresAt = new Date(Date.now() + 3600000);
         const hashedPassword = await bcrypt.hash(password,10);
         const [result] = await pool.query(
-            'insert into users (username,email,password) values (?,?,?)',
-            [username,email,hashedPassword]
+            'insert into users (username,email,password,is_verified,email_token,email_token_expires) values (?,?,?,?,?,?)',
+            [   username,
+                email,
+                hashedPassword,
+                false,
+                emailToken,
+                expiresAt
+            ]
         );
-        const token = generateToken(result.insertId);
+        const mailOption = {
+            from : `[DELOLIN] <${process.env.YEAH_EMAIL}>`,
+            to: email,
+            subject:'邮箱验证通知',
+            html:
+            `
+            <div style="font-family: 'Microsoft YaHei', sans-serif;">
+            <h2>感谢注册！</h2>
+            <p>请点击以下链接完成验证（有效期1小时）：</p>
+            <a href="${process.env.BASE_URL}/verify-email?token=${emailToken}">
+            ${process.env.BASE_URL}/verify-email?token=${emailToken}
+            </a>
+            <p>如非本人操作，请忽略此邮件。</p>
+            </div>
+            `,
+            text: `请访问 ${process.env.BASE_URL}/verify-email?token=${emailToken} 完成验证`,
+        }
+        mailOptions.headers = {
+            'X-Priority': '1', // 最高优先级
+            'X-Mailer': 'MyApp Mail Service',
+            'X-AntiAbuse': 'This is a verification email'
+        };
+        let emailCent = false;
+        try{
+            const info = await transporter.sendMail(mailOptions);
+            console.log(`邮件已发送至${email},Message ID:${info.messageId}`);
+            emailCent = true;
+        }catch(error){
+            console.error("邮件发送失败",error);
+            emailCent = false;
+        }
+        if(!emailCent) {
+            alert("验证邮件发送失败请重试");
+        }
         res.status(201).json({
-            userId:result.insertId,
-            username:username,
-            token:token,
-        });
+            success:true,
+            message:"验证邮件已发送，请检查邮箱"
+        })
     }catch(error) {
         next(error);
     }
 })
+
+app.get('/api/verify-email', async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        // 查询匹配且未过期的记录
+        const [users] = await pool.query(
+        `SELECT * FROM users 
+        WHERE email_token = ? 
+        AND email_token_expires > NOW() 
+        AND is_verified = 0`,
+        [token]
+    );
+
+    if (users.length === 0) {
+        return res.status(400).json({ 
+        error: '链接无效或已过期',
+        reason: 'invalid_token'
+        });
+    }
+
+    // 更新验证状态
+    await pool.query(
+        `UPDATE users 
+        SET is_verified = 1, 
+        email_token = NULL, 
+        email_token_expires = NULL 
+        WHERE id = ?`,
+        [users[0].id]
+    );
+
+    res.json({ success: true });
+    } catch (error) {
+    res.status(500).json({ error: '验证失败' });
+    }
+});
 
 app.post('/api/login',async(req,res,next) => {
     try{
