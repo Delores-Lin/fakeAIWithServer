@@ -158,6 +158,8 @@ signupBtn.addEventListener("click", function (event) {
 });
 //实现登录
 const loginBtn = document.querySelector(".loginBtn");
+const loginAccountBtn = document.querySelector("#loginBtn");
+const logoutAccountBtn = document.querySelector("#logoutBtn");
 
 async function loginServer(email,password) {
     try{
@@ -178,7 +180,9 @@ async function loginServer(email,password) {
     	    const loginAndSignup = document.querySelector(".loginAndSignup");
             loginAndSignup.style.display = "none";
             const userName = document.querySelector(".userName");
-	        userName.innerHTML = data.userName;
+	    userName.innerHTML = data.userName;
+      	    logoutAccountBtn.style.display = "block";
+            loginAccountBtn.style.display = "none";
             localStorage.setItem('token',data.token);
         }
         else if(response.status == 401){
@@ -225,6 +229,8 @@ async function modifyLogStatus(){
     }else{
         const logoutBtn = document.querySelector("#logoutBtn");
         logoutBtn.style.display = "none";
+        const userName = document.querySelector(".userName");
+        userName.innerHTML = "请登录";
     }
 }
 modifyLogStatus();
@@ -232,21 +238,21 @@ modifyLogStatus();
 //退出登陆状态
 async function logoutServer(){
     try{
-        const response = fetch("api/logout",{
+        const response = await fetch("api/logout",{
             method:"POST",
         })
         const result = await response.json();
-        if(result.success){
-            return true;
-        }
+	console.log("result:",result);
+        return result.success;
     }catch(error){
         console.log("登出错误",error);
+	return false;
     }
 }
-const loginAccountBtn = document.querySelector("#loginBtn");
-const logoutAccountBtn = document.querySelector("#logoutBtn");
 logoutAccountBtn.addEventListener("click",async()=>{
-    if(await logoutServer()){
+    const status = await logoutServer();
+    console.log(status);
+    if(status){
         logoutAccountBtn.style.display = "none";
         loginAccountBtn.style.display = "block";
         const userName = document.querySelector(".userName");
