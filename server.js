@@ -28,6 +28,8 @@ https.createServer(options,app).listen(443,() =>{
 	console.log('HTTP running on ...');
 });
 
+const transporter = require('./nodemailer');
+
 app.use(express.json({ limit: '10kb' }));
 app.use(cors({credentials: true}));//允许跨域请求
 app.use(helmet());
@@ -94,16 +96,6 @@ app.post('/api/register',async(req,res,next) => {
         );
         const expiresAt = new Date(Date.now() + 3600000);
         const hashedPassword = await bcrypt.hash(password,10);
-        const [result] = await pool.query(
-            'insert into users (username,email,password,is_verified,email_token,email_token_expires) values (?,?,?,?,?,?)',
-            [   username,
-                email,
-                hashedPassword,
-                false,
-                emailToken,
-                expiresAt
-            ]
-        );
         const mailOption = {
             from : `[DELOLIN] <${process.env.YEAH_EMAIL}>`,
             to: email,
@@ -113,22 +105,22 @@ app.post('/api/register',async(req,res,next) => {
             <div style="font-family: 'Microsoft YaHei', sans-serif;">
             <h2>感谢注册！</h2>
             <p>请点击以下链接完成验证（有效期1小时）：</p>
-            <a href="${process.env.BASE_URL}/verify-email?token=${emailToken}">
+            <a href="${process.env.BASE_URL}/verify.html?token=${emailToken}">
             ${process.env.BASE_URL}/verify-email?token=${emailToken}
             </a>
             <p>如非本人操作，请忽略此邮件。</p>
             </div>
             `,
-            text: `请访问 ${process.env.BASE_URL}/verify-email?token=${emailToken} 完成验证`,
+            text: `请访问 ${process.env.BASE_URL}/api/verify-email?token=${emailToken} 完成验证`,
         }
-        mailOptions.headers = {
+        mailOption.headers = {
             'X-Priority': '1', // 最高优先级
             'X-Mailer': 'MyApp Mail Service',
             'X-AntiAbuse': 'This is a verification email'
         };
         let emailCent = false;
         try{
-            const info = await transporter.sendMail(mailOptions);
+            const info = await transporter.sendMail(mailOption);
             console.log(`邮件已发送至${email},Message ID:${info.messageId}`);
             emailCent = true;
         }catch(error){
@@ -137,13 +129,24 @@ app.post('/api/register',async(req,res,next) => {
         }
         if(!emailCent) {
             alert("验证邮件发送失败请重试");
-        }
+        }else{
+	const [result] = await pool.query(
+            'insert into users (username,email,password,is_varified,email_token,email_token_expires) values (?,?,?,?,?,?)',
+            [   username,
+                email,
+                hashedPassword,
+                false,
+                emailToken,
+                expiresAt
+            ]
+        );
+	}
         res.status(201).json({
             success:true,
             message:"验证邮件已发送，请检查邮箱"
         })
     }catch(error) {
-        next(error);
+        console.error(error);
     }
 })
 
@@ -156,7 +159,7 @@ app.get('/api/verify-email', async (req, res) => {
         `SELECT * FROM users 
         WHERE email_token = ? 
         AND email_token_expires > NOW() 
-        AND is_verified = 0`,
+        AND is_varified = 0`,
         [token]
     );
 
@@ -170,7 +173,7 @@ app.get('/api/verify-email', async (req, res) => {
     // 更新验证状态
     await pool.query(
         `UPDATE users 
-        SET is_verified = 1, 
+        SET is_varified = 1, 
         email_token = NULL, 
         email_token_expires = NULL 
         WHERE id = ?`,
@@ -179,6 +182,7 @@ app.get('/api/verify-email', async (req, res) => {
 
     res.json({ success: true });
     } catch (error) {
+	console.error(error);
     res.status(500).json({ error: '验证失败' });
     }
 });
