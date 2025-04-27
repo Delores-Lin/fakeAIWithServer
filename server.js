@@ -154,6 +154,9 @@ app.get('/api/verify-email', async (req, res) => {
     const { token } = req.query;
 
     try {
+        //如果token过期则删除用户数据
+        await pool.query(`DELETE FROM users WHERE is_varified = 0 AND expires_at < NOW()`);
+        
         // 查询匹配且未过期的记录
         const [users] = await pool.query(
         `SELECT * FROM users 
@@ -199,6 +202,11 @@ app.post('/api/login',async(req,res,next) => {
         }
         const user = users[0];
         const validPassword = await bcrypt.compare(password,user.password);
+        if(!user.is_varified){
+            return res.status(403).json({
+                error:'邮箱未验证，请前往邮箱验证'
+            });
+        }
         if(!validPassword) {
             return res.status(402).json({error:'邮箱或密码错误'});
         }
