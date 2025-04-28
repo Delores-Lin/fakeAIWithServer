@@ -51,7 +51,7 @@
                     message = '验证链接无效';
                     break;
                 case 'expired_token':
-                    message = '链接已过期，请重新发送';
+                    message = '链接已过期，请重新注册';
                     break;
                 case 'already_verified':
                     message = '该邮箱已完成验证';

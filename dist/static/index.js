@@ -160,6 +160,7 @@ signupBtn.addEventListener("click", function (event) {
 const loginBtn = document.querySelector(".loginBtn");
 const loginAccountBtn = document.querySelector("#loginBtn");
 const logoutAccountBtn = document.querySelector("#logoutBtn");
+const wrong = document.querySelector(".wrong");
 
 async function loginServer(email,password) {
     try{
@@ -174,7 +175,7 @@ async function loginServer(email,password) {
             })
         })
         const data = await response.json();
-
+	console.log(response.status);
         if(response.ok){
             alert("登录成功！");
     	    const loginAndSignup = document.querySelector(".loginAndSignup");
@@ -189,7 +190,10 @@ async function loginServer(email,password) {
             wrong.innerHTML = "*该邮箱未注册，请先注册";
         }else if(response.status == 402){
             wrong.innerHTML = "*邮箱或密码错误";
-        }
+        }else if(response.status == 403){
+	    console.log(response.status);
+	    wrong.innerHTML = "*该邮箱未验证";
+	}
     }catch(error){
         console.log('请求失败',error);
     }
@@ -200,7 +204,6 @@ loginBtn.addEventListener("click", function (event) {
 
     const loginEmail = document.querySelector(".loginEmail").value;
     const loginPassword = document.querySelector(".loginPassword").value;
-    const wrong = document.querySelector(".wrong");
     loginServer(loginEmail,loginPassword);
 
 });
