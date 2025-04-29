@@ -1,12 +1,12 @@
-const pool = require('/root/fakeAI/db.js');
-const deepseek = require('deepseek');
+const pool = require('../db.js');
+const deepseek = require('./deepseek');
 
 exports.startChat = async (req,res,next) =>{
     const userId = req.user.id;
     const [result] = await pool.query(
         'insert into chat_sessions (user_id) values (?)',[userId]
     );
-    res.json({charId:chat.insertId});
+    res.json({chatId:result.insertId});
 }
 
 exports.sendMessage = async (req,res,next) =>{
@@ -29,11 +29,11 @@ exports.sendMessage = async (req,res,next) =>{
     const botMsg = await deepseek.sendToDeepseek(history,model);
     //储存新的消息到数据库
     await pool.query(
-        'insert into messages (char_session_id,sender,content) values (?,"user",?)',
+        'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
         [chatId,text]
     );
     await pool.query(
-        'insert into messages (char_session_id,sender,content) values (?,"bot",?)',
+        'insert into messages (chat_session_id,sender,content) values (?,"bot",?)',
         [chatId,botMsg.content]
     );
 
@@ -45,7 +45,7 @@ exports.getHistory = async(req,res,next) =>{
 
     const [rows] = await pool.query(
         'select sender,content,created_at from messages where chat_session_id = ? order by created_at',
-        [chat_Id]
+        [chatId]
     );
     res.json(rows);
 }
