@@ -20,6 +20,8 @@ const http  = require('http');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 
+const chatCtl = require('services/chat');
+
 const options = {
 	key: fs.readFileSync('/etc/letsencrypt/live/delolin.me/privkey.pem'),
 	cert: fs.readFileSync('/etc/letsencrypt/live/delolin.me/fullchain.pem')
@@ -156,7 +158,7 @@ app.get('/api/verify-email', async (req, res) => {
     try {
         //如果token过期则删除用户数据
         await pool.query(`DELETE FROM users WHERE is_varified = 0 AND expires_at < NOW()`);
-        
+
         // 查询匹配且未过期的记录
         const [users] = await pool.query(
         `SELECT * FROM users 
@@ -285,6 +287,11 @@ app.get('/api/auth/check',async (req, res) => {
         });
     }
 });
+
+//给模型发送消息获取回复
+app.post("/start",chatCtl.startChat);
+app.post('/:charId/message',chatCtl.sendMessage);
+app.get(':/chatId/history',chatCtl.getHistory);
 
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{

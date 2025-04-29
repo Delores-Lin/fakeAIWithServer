@@ -295,6 +295,7 @@ reasoner.addEventListener("click", function () {
 
 //发起对话
 sendBtn.addEventListener("click", sendMessage);
+
 messageInput.addEventListener("keypress", function (send) {
     if (send.key === "Enter") {
         if (chatBox.style.display === "none") {
@@ -304,6 +305,7 @@ messageInput.addEventListener("keypress", function (send) {
         sendMessage();
     }
 });
+
 newConversation.addEventListener("click", function () {
     if (chatBox.style.display === "none") {
         return;
@@ -311,18 +313,22 @@ newConversation.addEventListener("click", function () {
         chatBox.style.display = "none";
     }
 });
+
 function displayMessage(message) {
     const messageDiv = document.createElement("div");
     messageDiv.textContent = message.content;
     chatWindow.appendChild(messageDiv);
 }
+
 function displayBotMessage(messageHtml) {
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
     messageElement.innerHTML = messageHtml
     chatWindow.appendChild(messageElement);
 }
+
 let chat = [];
+
 async function sendMessage() {
     const message = messageInput.value.trim();
     if (message === "") {

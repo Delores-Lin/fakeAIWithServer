@@ -14,7 +14,7 @@ async function sendMessageToDeepseek(history,model) {
     model: model,
   });
 
-  return completion.choices[0].message.content;
+  return completion.choices[0].message;
 }
 
 module.export = {sendMessageToDeepseek };
