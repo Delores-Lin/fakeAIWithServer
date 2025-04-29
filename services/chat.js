@@ -2,7 +2,8 @@ const pool = require('../db.js');
 const deepseek = require('./deepseek');
 
 exports.startChat = async (req,res,next) =>{
-    const userId = req.user.id;
+    console.log(req.user);
+    const userId = req.user.userId;
     const [result] = await pool.query(
         'insert into chat_sessions (user_id) values (?)',[userId]
     );
@@ -11,9 +12,8 @@ exports.startChat = async (req,res,next) =>{
 
 exports.sendMessage = async (req,res,next) =>{
     const {chatId} = req.params;
-    const {text} = req.body.text;
-    const {model} = req.body.model;
-    const userId = req.user.id;
+    const {text,model} = req.body;
+    const userId = req.user.userId;
     //获取历史消息
     const [historyRows] = await pool.query(
         'select sender,content from messages where chat_session_id = ? order by created_at',[chatId]
@@ -26,8 +26,9 @@ exports.sendMessage = async (req,res,next) =>{
     //将新消息添加到历史消息中
     history.push({role:'user',content:text});
     //发送消息
-    const botMsg = await deepseek.sendToDeepseek(history,model);
+    const botMsg = await deepseek.sendMessageToDeepseek(history,model);
     //储存新的消息到数据库
+	console.log(chatId);
     await pool.query(
         'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
         [chatId,text]

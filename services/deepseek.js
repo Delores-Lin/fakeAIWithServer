@@ -14,7 +14,7 @@ async function sendMessageToDeepseek(history,model) {
     messages: history,
     model: model,
   });
-
+	console.log(completion);
   return completion.choices[0].message;
 }
 
