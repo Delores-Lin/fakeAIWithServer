@@ -570,6 +570,7 @@ form input:focus{
 }
 .chatWindow{
     flex:1;
+    position:absolute;
     padding:10px;
     overflow-y: auto;
 }

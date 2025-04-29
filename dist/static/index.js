@@ -320,6 +320,7 @@ newConversation.addEventListener("click", function () {
 
 function displayMessage(message) {
     const messageDiv = document.createElement("div");
+    messageDiv.className = "userContent";
     messageDiv.textContent = message.content;
     chatWindow.appendChild(messageDiv);
 }
