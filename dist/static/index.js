@@ -336,9 +336,9 @@ function displayBotMessage(data) {
         messageElement.appendChild(reasoningP);
     }
     const contentH = document.createElement("H3");
-    contentH = "content:";
+    contentH.innerHTML = "content:";
     const contentP = document.createElement("p");
-    contentP = data.content;
+    contentP.innerHTML = data.content;
     messageElement.appendChild(contentH);
     messageElement.appendChild(contentP);
     chatWindow.appendChild(messageElement);
