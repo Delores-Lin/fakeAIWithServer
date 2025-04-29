@@ -569,8 +569,8 @@ form input:focus{
     background-color: white;
 }
 .chatWindow{
+    display:flex;
     flex:1;
-    position:absolute;
     padding:10px;
     overflow-y: auto;
     flex-direction: column;
@@ -582,13 +582,18 @@ form input:focus{
     border-radius: 16px;
     width:fit-content;
     height:fit-content;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 20px;
+    line-height: 1;
     word-break: break-word;
     background-color: whitesmoke;
     transition: all 0.3s ease;
 }
-
+.bot-message{
+	max-width: 50vw;
+	word-break:break-word;
+	width:fit-content;
+    height:fit-content;
+}
 .toast {
     visibility: hidden;
     min-width: 200px;
