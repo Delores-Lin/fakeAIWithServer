@@ -1,6 +1,8 @@
-import OpenAI from "openai";
+require('dotenv').config()
+const {OpenAI} = require('openai');
 
 const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
+const base_url = "https://api.deepseek.com";
 
 const openai = new OpenAI({
         baseURL: 'https://api.deepseek.com',
@@ -16,4 +18,4 @@ async function sendMessageToDeepseek(history,model) {
   return completion.choices[0].message;
 }
 
-module.export = {sendMessageToDeepseek };
+module.exports = {sendMessageToDeepseek};

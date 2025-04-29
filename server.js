@@ -20,7 +20,7 @@ const http  = require('http');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 
-const chatCtl = require('services/chat');
+const chatCtl = require('./services/chat');
 
 const options = {
 	key: fs.readFileSync('/etc/letsencrypt/live/delolin.me/privkey.pem'),
@@ -290,8 +290,8 @@ app.get('/api/auth/check',async (req, res) => {
 
 //给模型发送消息获取回复
 app.post("/start",chatCtl.startChat);
-app.post('/:charId/message',chatCtl.sendMessage);
-app.get(':/chatId/history',chatCtl.getHistory);
+app.post('/chat/:chatId/message',chatCtl.sendMessage);
+app.get('/chat/:chatId/history',chatCtl.getHistory);
 
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{
