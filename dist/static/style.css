@@ -574,14 +574,12 @@ form input:focus{
     padding:10px;
     overflow-y: auto;
 }
-.chat-message{
-    margin:10px 0
-}
-.chat-massage.user{
-    text-align: right;
-}
-.chat-massage.bot {
-    text-align: left;
+.userContent{
+    left:20px;
+    max-width: 50vw;
+    width:fit-content;
+    height:fit-content;
+    background-color: grey;
 }
 
 .toast {
