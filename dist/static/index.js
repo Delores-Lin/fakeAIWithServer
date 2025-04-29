@@ -296,6 +296,9 @@ reasoner.addEventListener("click", function () {
 let chat_Id = null;
 
 sendBtn.addEventListener("click", ()=>{
+        if (chatBox.style.display === "none") {
+            chatBox.style.display = "flex";
+            }
 	sendMessage(chat_Id,messageInput);
 });
 
@@ -304,7 +307,6 @@ messageInput.addEventListener("keypress", function (send) {
     if (send.key === "Enter") {
         if (chatBox.style.display === "none") {
             chatBox.style.display = "flex";
-            clearChatHistory();
             }
         sendMessage(chat_Id,messageInput);
     }
@@ -320,14 +322,16 @@ newConversation.addEventListener("click", function () {
 
 function displayMessage(message) {
     const messageDiv = document.createElement("div");
-    messageDiv.textContent = message.content;
+    messageDiv.textContent = message;
     chatWindow.appendChild(messageDiv);
 }
 
 function displayBotMessage(data) {
+	console.log(data);
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
     if(data.reasoningContent != ""){
+	console.log(data.reasoningContent)
         const reasoningH = document.createElement("H3");
         reasoningH.innerHTML = "reasoning:";
         const reasoningP = document.createElement("p");
@@ -391,7 +395,7 @@ async function sendMessage(chatId,messageInput) {
                 model:model
             })
         })
-        const data = res.json();
+        const data = await res.json();
         displayBotMessage(data);
     }
 }
