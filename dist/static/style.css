@@ -583,4 +583,24 @@ form input:focus{
     text-align: left;
 }
 
-/* 弹出对话框 */
+.toast {
+    visibility: hidden;
+    min-width: 200px;
+    background-color: #f44336; /* 红色 */
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+}

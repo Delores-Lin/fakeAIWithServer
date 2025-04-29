@@ -323,64 +323,53 @@ function displayMessage(message) {
 function displayBotMessage(messageHtml) {
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
-    messageElement.innerHTML = messageHtml
+    messageElement.innerHTML = messageHtml;
     chatWindow.appendChild(messageElement);
 }
 
-let chat = [];
+let chat_Id = NULL;
 
-async function sendMessage() {
+async function initChat() {
+    try{
+        const response = await fetch('/chat/start');
+        const data = await response.json();
+        chat_Id = data.chatId;
+        const msgblock = document.createElement('section');
+            msgblock.className = "message";
+            msgblock.id = chatId;
+            const p = document.createElement('p');
+            p.innerHTML = "New Conversation";
+            msgblock.appendChild(p);
+            allConversation.appendChild(msgblock);
+    }catch(err){
+        console.error(err);
+    }
+}
+
+
+async function sendMessage(chatId,message,model) {
     const message = messageInput.value.trim();
     if (message === "") {
         return;
     } else {
-        const userMessage = {
-            "role": "user",
-            "content":message,
-        };
-        displayMessage(userMessage);
-        chatHistory.push(userMessage);
-        saveChatHistory();
-        messageInput.value = "";
-        sendBtn.disabled = true;
-        chat.push(userMessage);
-        try {
-            if (reasoner.classList.contains("active")){
-                let messages = getDeepSeekR1(chat);
-                console.log(messages);
-                let result = await messages;
-                let reasoningContentHtml = marked(result[0]);
-                let contentHtml = marked(result[1]);
-                console.log(reasoningContentHtml);
-                console.log(contentHtml);
-                let bot = {
-                    "role":"assistant",
-                    "content":result[1]
-                }
-                chat.push(bot);
-                displayMessage({"content":"reasoning content-------------------------------"});
-                displayBotMessage(reasoningContentHtml);
-                displayMessage({"content":"content-----------------------------"});
-                displayBotMessage(contentHtml);
-                chatHistory.push(contentHtml);
-                saveChatHistory();
-            }
-            else{
-                let messages = getDeepSeekV3(chat);
-                let result = await messages;
-                let resulthtml = marked(result);
-                console.log(resulthtml);
-                let bot = {"role":"assistant",
-                    "content":result
-                };
-                chat.push(bot);
-                displayBotMessage(resulthtml);
-                chatHistory.push(resulthtml);
-                saveChatHistory();
-            }
-        } catch (error) {
-            console.error("出现错误：", error);
+        if (!checkLoginStatus().isLoggedIn){
+            showError("未登录，请先登录");
+            return false;
         }
+        if (!chat_Id){
+            await initChat();
+        }
+        displayMessage(message);
+        const res = await fetch(`/chat/&{chatId}/message`,{
+            method : "POST",
+            headers : {'Content-Type':'application/json'},
+            body : JSON.stringify({
+                text : message,
+                model:model
+            })
+        })
+        const data = res.json();
+        displayBotMessage(data.content);
     }
 }
 
@@ -431,3 +420,12 @@ function clearChatHistory() {
 // }
 
 
+function showError(message, duration = 3000) {
+    const toast = document.getElementById('errorToast');
+    toast.textContent = message;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
