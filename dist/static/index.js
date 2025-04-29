@@ -296,7 +296,7 @@ reasoner.addEventListener("click", function () {
 let chat_Id = null;
 
 sendBtn.addEventListener("click", ()=>{
-        if (chatBox.style.display === "none") {
+        if (getComputedStyle(chatBox).display === "none") {
             chatBox.style.display = "flex";
             }
 	sendMessage(chat_Id,messageInput);
@@ -305,7 +305,7 @@ sendBtn.addEventListener("click", ()=>{
 
 messageInput.addEventListener("keypress", function (send) {
     if (send.key === "Enter") {
-        if (chatBox.style.display === "none") {
+        if (getComputedStyle(chatBox).display === "none") {
             chatBox.style.display = "flex";
             }
         sendMessage(chat_Id,messageInput);
