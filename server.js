@@ -289,6 +289,7 @@ app.get('/api/auth/check',async (req, res) => {
 });
 
 //给模型发送消息获取回复
+
 app.post("/chat/start",chatCtl.startChat);
 app.post('/chat/:chatId/message',chatCtl.sendMessage);
 app.get('/chat/:chatId/history',chatCtl.getHistory);

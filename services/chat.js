@@ -1,5 +1,6 @@
 const pool = require('../db.js');
 const deepseek = require('./deepseek');
+const {marked} = require('marked');
 
 exports.startChat = async (req,res,next) =>{
     const userId = req.user.id;
@@ -32,12 +33,16 @@ exports.sendMessage = async (req,res,next) =>{
         'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
         [chatId,text]
     );
+    const content = marked(botMsg.content || '');
+    const reasoningContent = marked(botMsg.reasoning_content || '');
     await pool.query(
         'insert into messages (chat_session_id,sender,content) values (?,"bot",?)',
-        [chatId,botMsg.content]
+        [chatId,content]
     );
-
-    res.json({reply:botMsg});
+    res.json({
+        content:content,
+        reasoningContent:reasoningContent
+    });
 };
 
 exports.getHistory = async(req,res,next) =>{

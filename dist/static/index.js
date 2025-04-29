@@ -320,10 +320,23 @@ function displayMessage(message) {
     chatWindow.appendChild(messageDiv);
 }
 
-function displayBotMessage(messageHtml) {
+function displayBotMessage(data) {
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
-    messageElement.innerHTML = messageHtml;
+    if(data.reasoningContent != ""){
+        const reasoningH = document.createElement("H3");
+        reasoningH.innerHTML = "reasoning:";
+        const reasoningP = document.createElement("p");
+        reasoningP.innerHTML = data.reasoningContent;
+        messageElement.appendChild(reasoningH);
+        messageElement.appendChild(reasoningP);
+    }
+    const contentH = document.createElement("H3");
+    contentH = "content:";
+    const contentP = document.createElement("p");
+    contentP = data.content;
+    messageElement.appendChild(contentH);
+    messageElement.appendChild(contentP);
     chatWindow.appendChild(messageElement);
 }
 
@@ -347,7 +360,7 @@ async function initChat() {
 }
 
 
-async function sendMessage(chatId,message,model) {
+async function sendMessage(message,model) {
     const message = messageInput.value.trim();
     if (message === "") {
         return;
@@ -369,28 +382,28 @@ async function sendMessage(chatId,message,model) {
             })
         })
         const data = res.json();
-        displayBotMessage(data.content);
+        displayBotMessage(data);
     }
 }
 
-let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-window.onload = function () {
-    loadChatHistory();
-}
-function loadChatHistory() {
-    chatHistory.forEach(message => {
-        displayMessage(message);
-    });
-}
-function saveChatHistory() {
-    localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
-}
-function clearChatHistory() {
-    localStorage.removeItem("chatHistory");
-    chatHistory = [];
-    chatWindow.innerHTML = "";
-    chat = [];
-}
+// let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+// window.onload = function () {
+//     loadChatHistory();
+// }
+// function loadChatHistory() {
+//     chatHistory.forEach(message => {
+//         displayMessage(message);
+//     });
+// }
+// function saveChatHistory() {
+//     localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+// }
+// function clearChatHistory() {
+//     localStorage.removeItem("chatHistory");
+//     chatHistory = [];
+//     chatWindow.innerHTML = "";
+//     chat = [];
+// }
 
 // const openai = new OpenAI({
 //     baseURL : 'https://api.deepseek.com',
