@@ -35,7 +35,6 @@ const input = document.querySelector(".input");
 input.addEventListener("input", function () {
     if (input.value.trim() !== "") {
         send.disabled = false;
-        send.classList.add("enabled");
     } else {
         send.disabled = true;
     }
@@ -294,7 +293,12 @@ reasoner.addEventListener("click", function () {
 
 
 //发起对话
-sendBtn.addEventListener("click", sendMessage);
+let chat_Id = null;
+
+sendBtn.addEventListener("click", ()=>{
+	sendMessage(chat_Id,messageInput);
+});
+
 
 messageInput.addEventListener("keypress", function (send) {
     if (send.key === "Enter") {
@@ -302,7 +306,7 @@ messageInput.addEventListener("keypress", function (send) {
             chatBox.style.display = "flex";
             clearChatHistory();
             }
-        sendMessage();
+        sendMessage(chat_Id,messageInput);
     }
 });
 
@@ -340,16 +344,14 @@ function displayBotMessage(data) {
     chatWindow.appendChild(messageElement);
 }
 
-let chat_Id = NULL;
-
 async function initChat() {
     try{
-        const response = await fetch('/chat/start');
+        const response = await fetch('/chat/start',{method:"POST"});
         const data = await response.json();
         chat_Id = data.chatId;
         const msgblock = document.createElement('section');
             msgblock.className = "message";
-            msgblock.id = chatId;
+            msgblock.id = chat_Id;
             const p = document.createElement('p');
             p.innerHTML = "New Conversation";
             msgblock.appendChild(p);
@@ -359,13 +361,15 @@ async function initChat() {
     }
 }
 
-
-async function sendMessage(message,model) {
+let model = "deepseek-chat";
+async function sendMessage(chatId,messageInput) {
     const message = messageInput.value.trim();
     if (message === "") {
         return;
     } else {
-        if (!checkLoginStatus().isLoggedIn){
+	const LogStatus = await checkLoginStatus();
+        if (! LogStatus.isLoggedIn){
+	    console.log("未登录，请先登录");
             showError("未登录，请先登录");
             return false;
         }
@@ -373,7 +377,13 @@ async function sendMessage(message,model) {
             await initChat();
         }
         displayMessage(message);
-        const res = await fetch(`/chat/&{chatId}/message`,{
+	if (reasoner.classList.contains("active")){
+		model = "deepseek-reasoner";
+	}
+	else{
+		model = "deepseek-chat";
+	}
+        const res = await fetch(`/chat/${chat_Id}/message`,{
             method : "POST",
             headers : {'Content-Type':'application/json'},
             body : JSON.stringify({

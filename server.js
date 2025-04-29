@@ -157,7 +157,7 @@ app.get('/api/verify-email', async (req, res) => {
 
     try {
         //如果token过期则删除用户数据
-        await pool.query(`DELETE FROM users WHERE is_varified = 0 AND expires_at < NOW()`);
+        await pool.query(`DELETE FROM users WHERE is_varified = 0 AND email_token_expires < NOW()`);
 
         // 查询匹配且未过期的记录
         const [users] = await pool.query(
@@ -289,10 +289,25 @@ app.get('/api/auth/check',async (req, res) => {
 });
 
 //给模型发送消息获取回复
+function verifyToken(req, res, next) {
+  const token = req.cookies.authToken;
 
-app.post("/chat/start",chatCtl.startChat);
-app.post('/chat/:chatId/message',chatCtl.sendMessage);
-app.get('/chat/:chatId/history',chatCtl.getHistory);
+  if (!token) {
+    return res.status(401).json({ error: '未登录，缺少 token' });
+  }
+
+  try {
+	const SECRET_KEY = process.env.JWT_SECRET;
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: '无效或过期的 token' });
+  }
+}
+app.post("/chat/start",verifyToken,chatCtl.startChat);
+app.post('/chat/:chatId/message',verifyToken,chatCtl.sendMessage);
+app.get('/chat/:chatId/history',verifyToken,chatCtl.getHistory);
 
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{
