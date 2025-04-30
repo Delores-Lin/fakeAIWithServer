@@ -64,7 +64,7 @@ exports.getHistoryChatContent = async(req,res,next) =>{
     const { chatId } = req.params;
     try{
         // 验证归属（略）
-        const [rows] = await db.query(
+        const [rows] = await pool.query(
             'SELECT sender, content, created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
             [chatId]
         );

@@ -330,10 +330,11 @@ newConversation.addEventListener("click", function () {
 });
 
 function displayMessage(message,chatId) {
+    console.log(message);
     const messageDiv = document.createElement("div");
     messageDiv.className = "userContent";
     messageDiv.textContent = message;
-    const chatWindow = document.querySelector(`#chatWindow.${chatId}`);
+    const chatWindow = document.querySelector(`.chatWindow#chat-${chatId}`);
     chatWindow.appendChild(messageDiv);
 }
 
@@ -341,7 +342,7 @@ function displayBotMessage(data,chatId) {
 	console.log(data);
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
-    if(data.reasoningContent != ""){
+    if(data.reasoningContent && data.reasoningContent != ""){
 	console.log(data.reasoningContent)
         const reasoningH = document.createElement("H3");
         reasoningH.innerHTML = "reasoning:";
@@ -356,7 +357,7 @@ function displayBotMessage(data,chatId) {
     contentP.innerHTML = data.content;
     messageElement.appendChild(contentH);
     messageElement.appendChild(contentP);
-    const chatWindow = document.querySelector(`#chatWindow.${chatId}`);
+    const chatWindow = document.querySelector(`.chatWindow#chat-${chatId}`);
     chatWindow.appendChild(messageElement);
 }
 
@@ -451,7 +452,7 @@ async function loadChatHistoryList(){
         //添加侧边栏的chatBlock
         const msgblock = document.createElement('section');
         msgblock.className = "message";
-        msgblock.id = chat.chatId;
+        msgblock.id = `chat-${chat.chatId}`;
             const p = document.createElement('p');
             p.innerHTML = chat.title;
             msgblock.appendChild(p);
@@ -459,11 +460,12 @@ async function loadChatHistoryList(){
         //预添加聊天窗口
         const chatWindow = document.createElement("div");
         chatWindow.className = "chatWindow";
-        chatWindow.id = chat.chatId;
+        chatWindow.id = `chat-${chat.chatId}`;
         chatWindow.style.display = "none";
         const chatBox = document.querySelector(".chat-box");
         chatBox.appendChild(chatWindow);
-        msgblock.addEventListener("click",async(msgblock)=>{
+        const chatId = chat.chatId;
+        msgblock.addEventListener("click",async(event)=>{
             const lastShow = document.querySelector(".messageShowing");
             if (lastShow) lastShow.style.className = "message";
             msgblock.className = "messageShowing";
@@ -471,11 +473,13 @@ async function loadChatHistoryList(){
             chatWindows.forEach(chatWindow =>{
                 chatWindow.style.display = "none";
             })
-	    console.log(chat);
+//	    console.log(chat);
             const chatWindow = document.querySelector(`.chatWindow#${msgblock.id}`);
-            chatWindow.display = "flex";
+	    console.log(msgblock);
+            chatWindow.style.display = "flex";
+	    chatBox.style.display = "flex";
             if(chatWindow.innerHTML.trim() == "")
-                await loadChatHistoryContent(data,chatId);
+                await loadChatHistoryContent(chatId);
         })
     })
 }
@@ -486,10 +490,10 @@ async function loadChatHistoryContent(chatId){
     });
     const datas = await res.json();
     datas.forEach(data =>{
-        if(data.cender == "user") {
+        if(data.sender == "user") {
             displayMessage(data.content,chatId);
         }else {
-            displayBotMessage(data.content,chatId);
+            displayBotMessage(data,chatId);
         }
     })
 }
