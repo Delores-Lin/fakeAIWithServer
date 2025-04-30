@@ -13,11 +13,13 @@ conversation.addEventListener("click", function () {
     if (hideConversation.style.display === "flex") {
         hideConversation.style.display = "none";
         hideArraw.src = "photos/arrawRight.png";
-        menu1.style.display = "block";
+	if(menu1)
+        	menu1.style.display = "block";
     }else {
         hideConversation.style.display = "flex";
         hideArraw.src = "photos/arrawDown.png";
-        menu1.style.display = "none";
+	if(menu1)
+        	menu1.style.display = "none";
     }
 })
 
@@ -361,7 +363,7 @@ function displayBotMessage(data,chatId) {
 async function initChat(title) {
     try{
         const response = await fetch('/chat/start',{
-            method:"POST"
+            method:"POST",
             headers:{
                 'Content-Type': 'application/json',
             },
@@ -434,15 +436,18 @@ async function sendMessage(chatId,messageInput) {
 
 //加载历史对话
 async function loadChatHistoryList(){
-    const status = checkLoginStatus();
+    const status = await checkLoginStatus();
+//    console.log(status.isloggedIn);
     if (!status.isLoggedIn) return;
+    let chatList = [];
     try{
         const res = await fetch("/chat/history/list",{method:"GET"});
-        const chatList = await res.json();
+        chatList = await res.json();
     }catch(err){
         console.error(err);
     }
-    chatList.forEach(chat =>{
+    console.log(chatList);
+    chatList.rows.forEach(chat =>{
         //添加侧边栏的chatBlock
         const msgblock = document.createElement('section');
         msgblock.className = "message";
@@ -455,10 +460,10 @@ async function loadChatHistoryList(){
         const chatWindow = document.createElement("div");
         chatWindow.className = "chatWindow";
         chatWindow.id = chat.chatId;
-        chatWinwow.style.display = "none";
+        chatWindow.style.display = "none";
         const chatBox = document.querySelector(".chat-box");
         chatBox.appendChild(chatWindow);
-        chat.addEventListener("click",async(msgblock,chat)=>{
+        msgblock.addEventListener("click",async(msgblock)=>{
             const lastShow = document.querySelector(".messageShowing");
             if (lastShow) lastShow.style.className = "message";
             msgblock.className = "messageShowing";
@@ -466,7 +471,8 @@ async function loadChatHistoryList(){
             chatWindows.forEach(chatWindow =>{
                 chatWindow.style.display = "none";
             })
-            const chatWindow = document.querySelector(`.chatWindow#${chat.chatId}`);
+	    console.log(chat);
+            const chatWindow = document.querySelector(`.chatWindow#${msgblock.id}`);
             chatWindow.display = "flex";
             if(chatWindow.innerHTML.trim() == "")
                 await loadChatHistoryContent(data,chatId);

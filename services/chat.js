@@ -48,7 +48,7 @@ exports.sendMessage = async (req,res,next) =>{
 };
 
 exports.getHistoryChatList = async(req,res,next) =>{
-    const {userId} = req.user.userId;
+    const {userId} = req.user;
     try{
         const [rows] = await pool.query(
             'select id as chatId, created_at,title from chat_sessions where user_id = ? order by created_at',
