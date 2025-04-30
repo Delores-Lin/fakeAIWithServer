@@ -307,7 +307,8 @@ function verifyToken(req, res, next) {
 }
 app.post("/chat/start",verifyToken,chatCtl.startChat);
 app.post('/chat/:chatId/message',verifyToken,chatCtl.sendMessage);
-app.get('/chat/:chatId/history',verifyToken,chatCtl.getHistory);
+app.get('/chat/history/list',verifyToken,chatCtl.getHistoryChatList);
+app.get('/chat/:chatId/history/content',verifyToken,chatCtl.getHistoryChatContent);
 
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{

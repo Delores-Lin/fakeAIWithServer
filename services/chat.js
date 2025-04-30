@@ -5,8 +5,9 @@ const {marked} = require('marked');
 exports.startChat = async (req,res,next) =>{
     console.log(req.user);
     const userId = req.user.userId;
+    const {title} = req.body;
     const [result] = await pool.query(
-        'insert into chat_sessions (user_id) values (?)',[userId]
+        'insert into chat_sessions (user_id,title) values (?,title)',[userId,title]
     );
     res.json({chatId:result.insertId});
 }
@@ -46,12 +47,29 @@ exports.sendMessage = async (req,res,next) =>{
     });
 };
 
-exports.getHistory = async(req,res,next) =>{
-    const {chatId} = req.params;
+exports.getHistoryChatList = async(req,res,next) =>{
+    const {userId} = req.user.userId;
+    try{
+        const [rows] = await pool.query(
+            'select id as chatId, created_at,title from chat_sessions where user_id = ? order by created_at',
+            [userId]
+        );
+        res.json({rows});
+    }catch(err){
+        console.error(err);
+    }
+}
 
-    const [rows] = await pool.query(
-        'select sender,content,created_at from messages where chat_session_id = ? order by created_at',
-        [chatId]
-    );
-    res.json(rows);
+exports.getHistoryChatContent = async(req,res,next) =>{
+    const { chatId } = req.params;
+    try{
+        // 验证归属（略）
+        const [rows] = await db.query(
+            'SELECT sender, content, created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
+            [chatId]
+        );
+        res.json(rows);
+    }catch(err){
+        console.error(err);
+    }
 }
