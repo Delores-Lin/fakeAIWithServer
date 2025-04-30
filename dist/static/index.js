@@ -367,6 +367,7 @@ async function initChat() {
 }
 
 let model = "deepseek-chat";
+
 async function sendMessage(chatId,messageInput) {
     const message = messageInput.value.trim();
     if (message === "") {
