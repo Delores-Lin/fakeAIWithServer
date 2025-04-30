@@ -313,7 +313,7 @@ messageInput.addEventListener("keypress", function (send) {
 });
 
 newConversation.addEventListener("click", function () {
-    if (chatBox.style.display === "none") {
+    if (getComputedStyle(chatBox).display === "none") {
         return;
     } else {
         chatBox.style.display = "none";
@@ -379,6 +379,7 @@ async function sendMessage(chatId,messageInput) {
             showError("未登录，请先登录");
             return false;
         }
+	messageInput.value = "";
         if (!chat_Id){
             await initChat();
         }
