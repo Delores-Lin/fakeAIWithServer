@@ -306,6 +306,9 @@ sendBtn.addEventListener("click", ()=>{
         if (getComputedStyle(chatBox).display === "none") {
             chatBox.style.display = "flex";
             }
+	const chatWindow = document.querySelector(".messageShowing")
+	if(chatWindow) chat_Id = chatWindow.id.split("-")[1];
+	else chat_Id = null;
 	sendMessage(chat_Id,messageInput);
 });
 
@@ -315,6 +318,9 @@ messageInput.addEventListener("keypress", function (send) {
         if (getComputedStyle(chatBox).display === "none") {
             chatBox.style.display = "flex";
             }
+	const chatWindow = document.querySelector(".messageShowing")
+	if(chatWindow) chat_Id = chatWindow.id.split("-")[1];
+	else chat_Id = null;
         sendMessage(chat_Id,messageInput);
     }
 });
@@ -324,7 +330,7 @@ newConversation.addEventListener("click", function () {
         return;
     } else {
         const lastShow = document.querySelector(".messageShowing");
-        if (lastShow) lastShow.style.className = "message";
+	if (lastShow) lastShow.className = "message";
         chatBox.style.display = "none";
     }
 });
@@ -378,11 +384,22 @@ async function initChat(title) {
             const lastShow = document.querySelector(".messageShowing");
             if (lastShow) lastShow.style.className = "message";
             msgblock.className = "messageShowing";
-            msgblock.id = chat_Id;
+            msgblock.id = `chat-${chat_Id}`;
             const p = document.createElement('p');
-            p.innerHTML = "New Conversation";
+            p.innerHTML = title;
             msgblock.appendChild(p);
-            allConversation.appendChild(msgblock);
+	    msgblock.addEventListener("click",()=>{
+                const lastShow = document.querySelector(".messageShowing");
+                if (lastShow) lastShow.className = "message";
+                msgblock.className = "messageShowing";
+            });
+        const chatWindow = document.createElement("div");
+        chatWindow.className = "chatWindow";
+        chatWindow.id = `chat-${chat_Id}`;
+        chatWindow.style.display = "flex";
+	chatBox.appendChild(chatWindow);
+	    allConversation.prepend(msgblock);
+
     }catch(err){
         console.error(err);
     }
@@ -467,7 +484,8 @@ async function loadChatHistoryList(){
         const chatId = chat.chatId;
         msgblock.addEventListener("click",async(event)=>{
             const lastShow = document.querySelector(".messageShowing");
-            if (lastShow) lastShow.style.className = "message";
+	    console.log(lastShow);
+            if (lastShow) lastShow.className = "message";
             msgblock.className = "messageShowing";
             const chatWindows = document.querySelectorAll(".chatWindow");
             chatWindows.forEach(chatWindow =>{
@@ -475,7 +493,7 @@ async function loadChatHistoryList(){
             })
 //	    console.log(chat);
             const chatWindow = document.querySelector(`.chatWindow#${msgblock.id}`);
-	    console.log(msgblock);
+//	    console.log(msgblock);
             chatWindow.style.display = "flex";
 	    chatBox.style.display = "flex";
             if(chatWindow.innerHTML.trim() == "")

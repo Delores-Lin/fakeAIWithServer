@@ -7,7 +7,7 @@ exports.startChat = async (req,res,next) =>{
     const userId = req.user.userId;
     const {title} = req.body;
     const [result] = await pool.query(
-        'insert into chat_sessions (user_id,title) values (?,title)',[userId,title]
+        'insert into chat_sessions (user_id,title) values (?,?)',[userId,title]
     );
     res.json({chatId:result.insertId});
 }
@@ -51,7 +51,7 @@ exports.getHistoryChatList = async(req,res,next) =>{
     const {userId} = req.user;
     try{
         const [rows] = await pool.query(
-            'select id as chatId, created_at,title from chat_sessions where user_id = ? order by created_at',
+            'select id as chatId, created_at,title from chat_sessions where user_id = ? order by created_at DESC',
             [userId]
         );
         res.json({rows});
