@@ -447,9 +447,58 @@ async function sendMessage(chatId,messageInput) {
                 model:model
             })
         })
-        const data = await res.json();
-        displayBotMessage(data,chat_Id);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while(true) {
+            const {value,done} = await reader.read();
+            if(done) break;
+
+            buffer += decoder.decode(value,{stream:true});
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop();
+
+            const {contentP,reasoningP}= createChatBox(reasoner.classList.contains("active")?1:0);
+
+            for(const part of parts){
+                if(part.startsWith('data:')) {
+                    const payload = JSON.parse(part.replace(/^data:\s*/,''));
+                    if(payload.chunk) {
+                        contentP.innerHTML += payload.chunk;
+                    }
+                }else if(part.startsWith('reasoning_data:')) {
+                    const payload = JSON.parse(part.replace(/^reasoning_data:\s*/,''));
+                    if(payload.chunk) {
+                        reasoningP.innerHTML += payload.chunk;
+                    }
+                }
+            }
+        }
     }
+}
+
+function createChatBox(reasoning){
+    let messageElement = document.createElement("div");
+    messageElement.classList.add("bot-message");
+    const reasoningH = document.createElement("H3");
+    const reasoningP = document.createElement("p");
+    if(reasoning){
+        reasoningH.innerHTML = "reasoning:";
+        reasoningP.innerHTML = '';
+        messageElement.appendChild(reasoningH);
+        messageElement.appendChild(reasoningP);
+    }
+    const contentH = document.createElement("H3");
+    contentH.innerHTML = "content:";
+    const contentP = document.createElement("p");
+    contentP.innerHTML = '';
+    messageElement.appendChild(contentH);
+    messageElement.appendChild(contentP);
+    const chatWindow = document.querySelector(`.chatWindow#chat-${chatId}`);
+    chatWindow.appendChild(messageElement);
+    return {contentP : contentP,
+            reasoningP : reasoningP};
 }
 
 //加载历史对话
@@ -515,52 +564,6 @@ async function loadChatHistoryContent(chatId){
         }
     })
 }
-// let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-// window.onload = function () {
-//     loadChatHistory();
-// }
-// function loadChatHistory() {
-//     chatHistory.forEach(message => {
-//         displayMessage(message);
-//     });
-// }
-// function saveChatHistory() {
-//     localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
-// }
-// function clearChatHistory() {
-//     localStorage.removeItem("chatHistory");
-//     chatHistory = [];
-//     chatWindow.innerHTML = "";
-//     chat = [];
-// }
-
-// const openai = new OpenAI({
-//     baseURL : 'https://api.deepseek.com',
-//     apiKey: '',
-//     dangerouslyAllowBrowser: true,
-// })
-
-// // 进行单轮对话
-// async function getDeepSeekV3(chat){
-//     const completion = await openai.chat.completions.create({
-//         messages:chat,
-//         model:"deepseek-chat",
-//     });
-//     let messages = completion.choices[0].message.content;
-//     return messages;
-// }
-
-// //推理模式
-// async function getDeepSeekR1(chat){
-//     const completion = await openai.chat.completions.create({
-//         model:"deepseek-reasoner",
-//         messages:chat,
-//     })
-//     let reasoningContent = await completion.choices[0].message.reasoning_content;
-//     let content = await completion.choices[0].message.content;
-//     return [reasoningContent,content];
-// }
-
 
 function showError(message, duration = 3000) {
     const toast = document.getElementById('errorToast');

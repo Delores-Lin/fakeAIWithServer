@@ -25,26 +25,45 @@ exports.sendMessage = async (req,res,next) =>{
         role: r.sender==='user'?'user':'assistant',
         content:r.content
     }));
+    let botContent = '';
+    let botReasoningContent = '';
     //将新消息添加到历史消息中
     history.push({role:'user',content:text});
-    //发送消息
-    const botMsg = await deepseek.sendMessageToDeepseek(history,model);
+    try{
+        //事件流
+        res.setHeader('content-Type','text/event-stream');
+        res.setHeader('Cache-Control','no-cache');
+        res.flushHeaders();
+        //发送消息
+        const botMsg = await deepseek.sendMessageToDeepseek(history,model);
+
+        for await (const part of botMsg){
+            const delta = part.choices[0].delta || {};
+            if(delta.reasoning_content){
+                botReasoningContent+=delta.reasoning_content;
+                res.write(`reasoning_data:${JSON.stringify({chunck:delta.reasoning_content})}`);
+            }
+            if(delta.content){
+                botContent+=delta;
+                res.write(`data:${JSON.stringify({ chunck: delta})}\n\n`);
+            }
+        }
+        res.write(`event:done\ndata:{}\n\n`);
+        res.end();
+    }catch(error){
+        console.log(error);
+    }
     //储存新的消息到数据库
 	console.log(chatId);
     await pool.query(
         'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
         [chatId,text]
     );
-    const content = marked(botMsg.content || '');
     const reasoningContent = marked(botMsg.reasoning_content || '');
     await pool.query(
-        'insert into messages (chat_session_id,sender,content) values (?,"bot",?)',
-        [chatId,content]
+        'insert into messages (chat_session_id,sender,content,reasoning_content) values (?,"bot",?,?)',
+        [chatId,botContent,reasoningContent]
     );
-    res.json({
-        content:content,
-        reasoningContent:reasoningContent
-    });
 };
 
 exports.getHistoryChatList = async(req,res,next) =>{
@@ -63,9 +82,8 @@ exports.getHistoryChatList = async(req,res,next) =>{
 exports.getHistoryChatContent = async(req,res,next) =>{
     const { chatId } = req.params;
     try{
-        // 验证归属（略）
         const [rows] = await pool.query(
-            'SELECT sender, content, created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
+            'SELECT sender, content,reasoning_content created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
             [chatId]
         );
         res.json(rows);
