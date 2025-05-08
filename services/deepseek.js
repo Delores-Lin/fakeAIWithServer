@@ -10,13 +10,11 @@ const openai = new OpenAI({
 });
 
 async function sendMessageToDeepseek(history,model) {
-  const completion = await openai.chat.completions.create({
+  return openai.chat.completions.create({
     messages: history,
     model: model,
     stream:true
   });
-	console.log(completion);
-  return completion.choices[0].message;
 }
 
 module.exports = {sendMessageToDeepseek};

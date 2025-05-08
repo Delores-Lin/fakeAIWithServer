@@ -451,6 +451,8 @@ async function sendMessage(chatId,messageInput) {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+            const {contentP,reasoningP}= createChatBox(reasoner.classList.contains("active")?1:0);
+
         while(true) {
             const {value,done} = await reader.read();
             if(done) break;
@@ -459,18 +461,19 @@ async function sendMessage(chatId,messageInput) {
             const parts = buffer.split('\n\n');
             buffer = parts.pop();
 
-            const {contentP,reasoningP}= createChatBox(reasoner.classList.contains("active")?1:0);
 
             for(const part of parts){
                 if(part.startsWith('data:')) {
                     const payload = JSON.parse(part.replace(/^data:\s*/,''));
-                    if(payload.chunk) {
-                        contentP.innerHTML += payload.chunk;
+		    console.log(payload);
+                    if(payload.chunck) {
+			//console.log(payload.chunk);
+                        contentP.innerHTML += payload.chunck;
                     }
                 }else if(part.startsWith('reasoning_data:')) {
                     const payload = JSON.parse(part.replace(/^reasoning_data:\s*/,''));
-                    if(payload.chunk) {
-                        reasoningP.innerHTML += payload.chunk;
+                    if(payload.chunck) {
+                        reasoningP.innerHTML += payload.chunck;
                     }
                 }
             }
@@ -495,7 +498,7 @@ function createChatBox(reasoning){
     contentP.innerHTML = '';
     messageElement.appendChild(contentH);
     messageElement.appendChild(contentP);
-    const chatWindow = document.querySelector(`.chatWindow#chat-${chatId}`);
+    const chatWindow = document.querySelector(`.chatWindow#chat-${chat_Id}`);
     chatWindow.appendChild(messageElement);
     return {contentP : contentP,
             reasoningP : reasoningP};
@@ -557,6 +560,7 @@ async function loadChatHistoryContent(chatId){
     });
     const datas = await res.json();
     datas.forEach(data =>{
+	console.log(data);
         if(data.sender == "user") {
             displayMessage(data.content,chatId);
         }else {

@@ -29,6 +29,7 @@ exports.sendMessage = async (req,res,next) =>{
     let botReasoningContent = '';
     //将新消息添加到历史消息中
     history.push({role:'user',content:text});
+    console.log(history);
     try{
         //事件流
         res.setHeader('content-Type','text/event-stream');
@@ -44,26 +45,27 @@ exports.sendMessage = async (req,res,next) =>{
                 res.write(`reasoning_data:${JSON.stringify({chunck:delta.reasoning_content})}`);
             }
             if(delta.content){
-                botContent+=delta;
-                res.write(`data:${JSON.stringify({ chunck: delta})}\n\n`);
+                botContent+=delta.content;
+		console.log(delta.content);
+                res.write(`data:${JSON.stringify({ chunck: delta.content})}\n\n`);
             }
         }
+    //储存新的消息到数据库
+    await pool.query(
+        'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
+        [chatId,text]
+    );
+    const markReasoningContent = marked(botReasoningContent || '');
+    const markBotContent = marked(botContent || '');
+    await pool.query(
+        'insert into messages (chat_session_id,sender,content,reasoning_content) values (?,"bot",?,?)',
+        [chatId,markBotContent,markReasoningContent]
+    );
         res.write(`event:done\ndata:{}\n\n`);
         res.end();
     }catch(error){
         console.log(error);
     }
-    //储存新的消息到数据库
-	console.log(chatId);
-    await pool.query(
-        'insert into messages (chat_session_id,sender,content) values (?,"user",?)',
-        [chatId,text]
-    );
-    const reasoningContent = marked(botMsg.reasoning_content || '');
-    await pool.query(
-        'insert into messages (chat_session_id,sender,content,reasoning_content) values (?,"bot",?,?)',
-        [chatId,botContent,reasoningContent]
-    );
 };
 
 exports.getHistoryChatList = async(req,res,next) =>{
