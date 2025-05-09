@@ -42,12 +42,12 @@ exports.sendMessage = async (req,res,next) =>{
             const delta = part.choices[0].delta || {};
             if(delta.reasoning_content){
                 botReasoningContent+=delta.reasoning_content;
-                res.write(`reasoning_data:${JSON.stringify({chunck:delta.reasoning_content})}`);
+                res.write(`reasoning_data:${JSON.stringify({chunk:delta.reasoning_content})}\n\n`);
             }
             if(delta.content){
                 botContent+=delta.content;
 		console.log(delta.content);
-                res.write(`data:${JSON.stringify({ chunck: delta.content})}\n\n`);
+                res.write(`data:${JSON.stringify({ chunk: delta.content})}\n\n`);
             }
         }
     //储存新的消息到数据库
@@ -85,9 +85,10 @@ exports.getHistoryChatContent = async(req,res,next) =>{
     const { chatId } = req.params;
     try{
         const [rows] = await pool.query(
-            'SELECT sender, content,reasoning_content created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
+            'SELECT sender, content,reasoning_content,created_at FROM messages WHERE chat_session_id = ? ORDER BY created_at',
             [chatId]
         );
+	console.log(rows);
         res.json(rows);
     }catch(err){
         console.error(err);

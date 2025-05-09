@@ -318,7 +318,7 @@ messageInput.addEventListener("keypress", function (send) {
         if (getComputedStyle(chatBox).display === "none") {
             chatBox.style.display = "flex";
             }
-	const chatWindow = document.querySelector(".messageShowing")
+	const chatWindow = document.querySelector(".messageShowing");
 	if(chatWindow) chat_Id = chatWindow.id.split("-")[1];
 	else chat_Id = null;
         sendMessage(chat_Id,messageInput);
@@ -329,8 +329,14 @@ newConversation.addEventListener("click", function () {
     if (getComputedStyle(chatBox).display === "none") {
         return;
     } else {
+	const chatWindow = document.querySelector(".messageShowing");
+	const currentWindow = chatBox.querySelector(`#${chatWindow.id}`);
+	currentWindow.style.display = "none";
+	chat_Id = null;
         const lastShow = document.querySelector(".messageShowing");
-	if (lastShow) lastShow.className = "message";
+	if (lastShow) {
+		lastShow.className = "message";
+	}
         chatBox.style.display = "none";
     }
 });
@@ -345,7 +351,6 @@ function displayMessage(message,chatId) {
 }
 
 function displayBotMessage(data,chatId) {
-	console.log(data);
     let messageElement = document.createElement("div");
     messageElement.classList.add("bot-message");
     if(data.reasoningContent && data.reasoningContent != ""){
@@ -388,10 +393,12 @@ async function initChat(title) {
             const p = document.createElement('p');
             p.innerHTML = title;
             msgblock.appendChild(p);
-	    msgblock.addEventListener("click",()=>{
+	    msgblock.addEventListener("click",(e)=>{
                 const lastShow = document.querySelector(".messageShowing");
                 if (lastShow) lastShow.className = "message";
-                msgblock.className = "messageShowing";
+                e.currentTarget.className = "messageShowing";
+		const currentWindow = chatBox.querySelector(`#chat-${chat_Id}`);
+		currentWindow.style.display = "flex";
             });
         const chatWindow = document.createElement("div");
         chatWindow.className = "chatWindow";
@@ -428,15 +435,15 @@ async function sendMessage(chatId,messageInput) {
             return false;
         }
 	messageInput.value = "";
-        if (!chat_Id){
-            const title = extractTitle(message);
-            await initChat(title);
+	send.disabled = true;
+        if (!chat_Id){ const title = extractTitle(message); 
+		await initChat(title);
         }
-        displayMessage(message,chat_Id);
+        displayMessage(message,chat_Id); 
 	if (reasoner.classList.contains("active")){
 		model = "deepseek-reasoner";
 	}
-	else{
+	else{ 
 		model = "deepseek-chat";
 	}
         const res = await fetch(`/chat/${chat_Id}/message`,{
@@ -466,14 +473,14 @@ async function sendMessage(chatId,messageInput) {
                 if(part.startsWith('data:')) {
                     const payload = JSON.parse(part.replace(/^data:\s*/,''));
 		    console.log(payload);
-                    if(payload.chunck) {
+                    if(payload.chunk) {
 			//console.log(payload.chunk);
-                        contentP.innerHTML += payload.chunck;
+                        contentP.innerHTML += payload.chunk;
                     }
                 }else if(part.startsWith('reasoning_data:')) {
                     const payload = JSON.parse(part.replace(/^reasoning_data:\s*/,''));
-                    if(payload.chunck) {
-                        reasoningP.innerHTML += payload.chunck;
+                    if(payload.chunk) {
+                        reasoningP.innerHTML += payload.chunk;
                     }
                 }
             }
@@ -560,7 +567,6 @@ async function loadChatHistoryContent(chatId){
     });
     const datas = await res.json();
     datas.forEach(data =>{
-	console.log(data);
         if(data.sender == "user") {
             displayMessage(data.content,chatId);
         }else {
