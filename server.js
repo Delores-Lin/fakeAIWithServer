@@ -20,6 +20,9 @@ const http  = require('http');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 
+const multer = require('multer');
+const upload = multer();
+
 const chatCtl = require('./services/chat');
 
 const options = {
@@ -139,7 +142,7 @@ app.post('/api/register',async(req,res,next) => {
                 hashedPassword,
                 false,
                 emailToken,
-                expiresAt
+                expiresAt,
             ]
         );
 	}
@@ -290,21 +293,53 @@ app.get('/api/auth/check',async (req, res) => {
 
 //给模型发送消息获取回复
 function verifyToken(req, res, next) {
-  const token = req.cookies.authToken;
+const token = req.cookies.authToken;
 
-  if (!token) {
-    return res.status(401).json({ error: '未登录，缺少 token' });
-  }
+    if (!token) {
+        return res.status(401).json({ error: '未登录，缺少 token' });
+    }
 
-  try {
-	const SECRET_KEY = process.env.JWT_SECRET;
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: '无效或过期的 token' });
-  }
+    try {
+    	const SECRET_KEY = process.env.JWT_SECRET;
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(401).json({ error: '无效或过期的 token' });
+    }
 }
+
+//上传用户头像
+app.post('/user/avatar',upload.single('avatar'),async(req,res,next) => {
+    try{
+        const file = req.file;
+        if (!file) return res.status(400).send('No file uploaded');
+
+        const [result]  = await pool.query(
+            `update users set avatar_data=? , avatar_mine = ? , where id = ?`,
+            [file.buffer,file.mimetype,req.user.id]
+        );
+        res.json({imageId:result.insertId});
+    }catch(error){
+        console.log(error);
+    }
+})
+
+//获取用户头像
+app.get('/user/avatar',verifyToken,async (req,res,next) =>{
+    try{
+        const [rows] = await pool.query(
+            'select atatar_data,avatar_mime from users where id = ?',
+            [req.user.id]
+        );
+        if (!rows.length || !rows[0].avatar_data) {
+            return res.status(404).send('No avatar');
+        }
+        res.setHeader('content-Type',rows[0].avatar_mime);
+        res.send(rows[0].avatar_data);
+    }
+})
+
 app.post("/chat/start",verifyToken,chatCtl.startChat);
 app.post('/chat/:chatId/message',verifyToken,chatCtl.sendMessage);
 app.get('/chat/history/list',verifyToken,chatCtl.getHistoryChatList);
@@ -356,4 +391,3 @@ process.on('SIGTERM',() => {
         console.log('HTTP server closed');
     })
 })
-

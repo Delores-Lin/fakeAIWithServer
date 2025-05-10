@@ -131,7 +131,7 @@ async function registerServer(username,email,password){
             body:JSON.stringify({
                 username:username,
                 email:email,
-                password:password
+                password:password,
             })
         })
         const data = await response.json();
@@ -157,6 +157,31 @@ signupBtn.addEventListener("click", function (event) {
     const signupPassword = document.querySelector(".signupPassword").value;
     registerServer(username,signupEmail,signupPassword);
 });
+
+//用户头像上传
+const form = document.querySelector('#avatarForm');
+
+form.addEventListener('submit',async e =>{
+    e.preventDefault();
+    const fd = new FormData(form);
+    const res = await fetch('/upload/image',{
+        method:"POST",
+        credentials:'include',
+        body:fd
+    });
+    if(res.ok){
+        const userAvatar = document.querySelector('.userImg');
+        userAvatar.src = 'user/avatar';
+    }
+    const {imageId} = await res.json();
+    preview.src = `/image${imageId}`
+})
+//用户头像读取
+window.addEventListener('load',()=>{
+    const userAvatar = document.querySelector('.userImg');
+    userAvatar.src = 'user/avatar';
+})
+
 //实现登录
 const loginBtn = document.querySelector(".loginBtn");
 const loginAccountBtn = document.querySelector("#loginBtn");
