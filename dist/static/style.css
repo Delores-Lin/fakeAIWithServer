@@ -425,6 +425,38 @@ img.sendImg{
     cursor:pointer;
 }
 
+.message{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.message p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+}
+delectChat{
+    display:block;
+    width:24px;
+    height:24px;
+    border-radius: 20%;
+    box-shadow: 3px 2px 2px grey;
+
+    transform:scale(50%);
+    opacity:0;
+    transform-origin:center center;
+    transition:transform 0.2s ease-out,opacity 0.2s ease-out;
+}
+.deleteWrap{
+    width:30px;
+    height:30px;
+}
+.deleteWrap:hover deleteChat{
+    transform:scale(1);
+    opacity:1;
+}
+
 .loginAndSignup{
     position: relative;
     z-index: 1000000;

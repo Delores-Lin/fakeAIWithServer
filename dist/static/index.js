@@ -417,6 +417,13 @@ async function initChat(title) {
             msgblock.id = `chat-${chat_Id}`;
             const p = document.createElement('p');
             p.innerHTML = title;
+            const deleteWrap = document.createElement('div');
+            const deleteChat = document.createElement('div');
+            deleteChat.className = "deleteChat";
+            deleteWrap.className = "deleteWrap";
+            deleteChat.innerHTML = '×';
+            deleteWrap.appendChild(deleteChat);
+            msgblock.appendChild(deleteWrap);
             msgblock.appendChild(p);
 	    msgblock.addEventListener("click",(e)=>{
                 const lastShow = document.querySelector(".messageShowing");
@@ -552,11 +559,18 @@ async function loadChatHistoryList(){
     chatList.rows.forEach(chat =>{
         //添加侧边栏的chatBlock
         const msgblock = document.createElement('section');
+        const deleteWrap = document.createElement('div');
+        const deleteChat = document.createElement('div');
+        deleteChat.innerHTML = '×';
+        deleteChat.className = "deleteChat";
+        deleteWrap.className = "deleteWrap";
+        deleteWrap.appendChild(deleteChat);
         msgblock.className = "message";
         msgblock.id = `chat-${chat.chatId}`;
             const p = document.createElement('p');
             p.innerHTML = chat.title;
             msgblock.appendChild(p);
+            msgblock.appendChild(deleteWrap);
             allConversation.appendChild(msgblock);
         //预添加聊天窗口
         const chatWindow = document.createElement("div");
