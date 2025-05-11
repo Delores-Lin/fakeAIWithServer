@@ -310,18 +310,18 @@ const token = req.cookies.authToken;
 }
 
 //上传用户头像
-app.post('/user/avatar',upload.single('avatar'),async(req,res,next) => {
+app.post('/user/avatar',verifyToken,upload.single('avatar'),async(req,res,next) => {
     try{
         const file = req.file;
         if (!file) return res.status(400).send('No file uploaded');
 
         const [result]  = await pool.query(
-            `update users set avatar_data=? , avatar_mine = ? , where id = ?`,
-            [file.buffer,file.mimetype,req.user.id]
+            `update users set avatar_data=? , avatar_mime = ? where id = ?`,
+            [file.buffer,file.mimetype,req.user.userId]
         );
-        res.json({imageId:result.insertId});
+        res.json({imageId:result.id});
     }catch(error){
-        console.log(error);
+        console.error(error);
     }
 })
 
@@ -329,14 +329,16 @@ app.post('/user/avatar',upload.single('avatar'),async(req,res,next) => {
 app.get('/user/avatar',verifyToken,async (req,res,next) =>{
     try{
         const [rows] = await pool.query(
-            'select atatar_data,avatar_mime from users where id = ?',
-            [req.user.id]
+            'select avatar_data,avatar_mime from users where id = ?',
+            [req.user.userId]
         );
         if (!rows.length || !rows[0].avatar_data) {
             return res.status(404).send('No avatar');
         }
         res.setHeader('content-Type',rows[0].avatar_mime);
         res.send(rows[0].avatar_data);
+    }catch(err){
+	console.error(err);
     }
 })
 

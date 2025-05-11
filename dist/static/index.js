@@ -164,7 +164,7 @@ const form = document.querySelector('#avatarForm');
 form.addEventListener('submit',async e =>{
     e.preventDefault();
     const fd = new FormData(form);
-    const res = await fetch('/upload/image',{
+    const res = await fetch('/user/avatar',{
         method:"POST",
         credentials:'include',
         body:fd

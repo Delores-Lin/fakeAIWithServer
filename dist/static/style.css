@@ -162,6 +162,11 @@ header section nav ul li img:hover{
     position: relative;
     width:100px;
 }
+.userImg{
+	border-radius:50%;
+	width:50px;
+	height:50px;
+}
 
 /* AI主体界面 */
 main{
