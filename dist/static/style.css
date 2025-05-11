@@ -91,7 +91,7 @@ aside div > section{
     cursor:pointer;
 }
 .allConversation{
-    height:60vh;
+    height:70vh;
     overflow-y: auto;      /* 垂直方向滚动 */
     overflow-x: hidden;  
 }
@@ -396,8 +396,8 @@ img.sendImg{
 }
 
 .allConversation{
-    width:15vw;
-    margin-left: 4vw;
+    width:90%;
+    margin-left: 0.5vw;
     flex-wrap: wrap;
     align-items: right;
     justify-content:space-around;
@@ -410,7 +410,7 @@ img.sendImg{
     border-radius: 5px;
 }
 .allConversation section p{
-    width:15vw;
+    min-width:15px;
     overflow:hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -425,10 +425,23 @@ img.sendImg{
     cursor:pointer;
 }
 
-.message{
+.message {
     display:flex;
+    flex-wrap:nowrap;
     justify-content: space-between;
     align-items: center;
+}
+.messageShowing{
+	display:flex;
+	flex-wrap:nowrap;
+	justify-content:space-between;
+	align-items:center;
+}
+.messageShowing p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
 }
 .message p {
     text-overflow: ellipsis;
@@ -436,23 +449,32 @@ img.sendImg{
     word-break: break-all;
     white-space: nowrap;
 }
-delectChat{
-    display:block;
-    width:24px;
-    height:24px;
+.deleteChat{
+    display:flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center;     /* 垂直居中 */
+    width:16px;
+    height:16px;
     border-radius: 20%;
-    box-shadow: 3px 2px 2px grey;
-
+    box-shadow: 0px 0px 1px 2px grey;
+    background-color:#f44336;
     transform:scale(50%);
     opacity:0;
     transform-origin:center center;
     transition:transform 0.2s ease-out,opacity 0.2s ease-out;
 }
 .deleteWrap{
+    display:flex;
     width:30px;
     height:30px;
+    align-items:center;
+    justify-content:center;
 }
-.deleteWrap:hover deleteChat{
+.message:hover .deleteChat{
+    transform:scale(1);
+    opacity:1;
+}
+.messageShowing:hover .deleteChat{
     transform:scale(1);
     opacity:1;
 }
