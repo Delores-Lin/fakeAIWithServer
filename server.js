@@ -347,6 +347,39 @@ app.post('/chat/:chatId/message',verifyToken,chatCtl.sendMessage);
 app.get('/chat/history/list',verifyToken,chatCtl.getHistoryChatList);
 app.get('/chat/:chatId/history/content',verifyToken,chatCtl.getHistoryChatContent);
 
+//删除对话
+app.delete('/chat/:chatId',verifyToken,async(req,res,next) => {
+    const userId = req.user.userId;
+    const chatId = req.params.chatId;
+    try{
+        await pool.beginTransaction();
+        const[[session]] = await pool.query(
+            'select user_id from chat_sessions where id = ?',
+            [chatId]
+        )
+        if(!session || session.user_id !== userId) {
+            return res.status(403).json({error:"无操作权限"});
+        }
+
+        await pool.query(
+            'delete from messages where id = ?',
+            [chatId]
+        );
+        await pool.query(
+            'delete from chat_sessions where id = ?',
+            [chatId]
+        );
+
+        await pool.commit();
+
+        res.json({seccess:true,message:"会话记录已删除"});
+    }catch(err){
+        console.error(err);
+    }finally{
+        pool.release();
+    }
+})
+
 app.use(express.static(path.join(__dirname,'dist')));
 app.get('/',(req,res) =>{
 	const filePath = path.join(__dirname,'dist','fakeAI.html');

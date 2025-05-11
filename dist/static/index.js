@@ -614,6 +614,25 @@ async function loadChatHistoryContent(chatId){
     })
 }
 
+async function deleteChat(chatId){
+    try{
+        const res = await fetch(`/chat/${chatId}`,{
+            method:"DELETE"
+        });
+        const response = await res.json();
+        if(response.success) showError("会话已删除");
+    }catch(error){
+        console.log(error);
+    }
+}
+
+const chat = document.querySelector(".deleteChat");
+chat.addEventListener('click',async e =>{
+    const msgblock = deleteChat.parentElement.parentElement;
+    const chatId = msgblock.id.split("-")[1];
+    await deleteChat(chatId);
+})
+
 function showError(message, duration = 3000) {
     const toast = document.getElementById('errorToast');
     toast.textContent = message;
