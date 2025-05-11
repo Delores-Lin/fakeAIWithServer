@@ -351,9 +351,11 @@ app.get('/chat/:chatId/history/content',verifyToken,chatCtl.getHistoryChatConten
 app.delete('/chat/:chatId',verifyToken,async(req,res,next) => {
     const userId = req.user.userId;
     const chatId = req.params.chatId;
+
+    const conn = await pool.getConnection();
     try{
-        await pool.beginTransaction();
-        const[[session]] = await pool.query(
+        await conn.beginTransaction();
+        const[[session]] = await conn.query(
             'select user_id from chat_sessions where id = ?',
             [chatId]
         )
@@ -361,22 +363,22 @@ app.delete('/chat/:chatId',verifyToken,async(req,res,next) => {
             return res.status(403).json({error:"无操作权限"});
         }
 
-        await pool.query(
-            'delete from messages where id = ?',
+        await conn.query(
+            'delete from messages where chat_session_id = ?',
             [chatId]
         );
-        await pool.query(
+        await conn.query(
             'delete from chat_sessions where id = ?',
             [chatId]
         );
 
-        await pool.commit();
+        await conn.commit();
 
         res.json({seccess:true,message:"会话记录已删除"});
     }catch(err){
         console.error(err);
     }finally{
-        pool.release();
+        conn.release();
     }
 })
 

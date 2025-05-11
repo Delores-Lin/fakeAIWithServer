@@ -177,9 +177,25 @@ form.addEventListener('submit',async e =>{
     preview.src = `/image${imageId}`
 })
 //用户头像读取
-window.addEventListener('load',()=>{
-    const userAvatar = document.querySelector('.userImg');
-    userAvatar.src = 'user/avatar';
+window.addEventListener('load', async ()=>{
+    const userAvatar = document.querySelector(".userImg");
+    try{
+	const res = await fetch('/user/avatar', {
+	method:"GET",
+        credentials: 'include'
+        });
+    	if (!res.ok) throw new Error('No avatar');
+    	const blob = await res.blob();
+	console.log(blob.type);
+	const reader = new FileReader();
+	reader.onload = (e) =>{
+		userAvatar.src = e.target.result;
+	}
+	reader.readAsDataURL(blob);
+    }catch(error){
+	console.log(error);
+	userAvatar.src = 'photos/user.svg';
+    }
 })
 
 //实现登录
@@ -423,8 +439,23 @@ async function initChat(title) {
             deleteWrap.className = "deleteWrap";
             deleteChat.innerHTML = '×';
             deleteWrap.appendChild(deleteChat);
-            msgblock.appendChild(deleteWrap);
             msgblock.appendChild(p);
+            msgblock.appendChild(deleteWrap);
+    	    deleteChat.addEventListener('click',async e =>{
+		e.stopPropagation();
+    		const msgblock = chat.closest('.message') || chat.closest(".messageShowing");
+		if (!msgblock) return console.log("未找到msgblock");
+    		const chatId = msgblock.id.split("-")[1];	
+		try{
+	    		await deleteChat(chatId);
+	    		if(msgblock.classList.contains("messageShowing")){
+			newConversation.click();
+	    		}
+	    	msgblock.remove();
+		}catch(error){
+	    	    console.log(error);
+	    	}
+	    });
 	    msgblock.addEventListener("click",(e)=>{
                 const lastShow = document.querySelector(".messageShowing");
                 if (lastShow) lastShow.className = "message";
@@ -612,6 +643,26 @@ async function loadChatHistoryContent(chatId){
             displayBotMessage(data,chatId);
         }
     })
+	const chats = document.querySelectorAll(".deleteChat");
+	console.log(chats.length);
+	chats.forEach(chat => {
+    		chat.addEventListener('click',async e =>{
+		e.stopPropagation();
+		console.log("click");
+    		const msgblock = chat.closest('.message') || chat.closest(".messageShowing");
+		if (!msgblock) return console.log("未找到msgblock");
+    		const chatId = msgblock.id.split("-")[1];	
+		try{
+	    		await deleteChat(chatId);
+	    		if(msgblock.classList.contains("messageShowing")){
+			newConversation.click();
+	    		}
+	    	msgblock.remove();
+		}catch(error){
+	    	sonsole.log(error);
+	}
+     	})
+     });
 }
 
 async function deleteChat(chatId){
@@ -625,13 +676,6 @@ async function deleteChat(chatId){
         console.log(error);
     }
 }
-
-const chat = document.querySelector(".deleteChat");
-chat.addEventListener('click',async e =>{
-    const msgblock = deleteChat.parentElement.parentElement;
-    const chatId = msgblock.id.split("-")[1];
-    await deleteChat(chatId);
-})
 
 function showError(message, duration = 3000) {
     const toast = document.getElementById('errorToast');

@@ -400,17 +400,19 @@ img.sendImg{
     margin-left: 0.5vw;
     flex-wrap: wrap;
     align-items: right;
-    justify-content:space-around;
+    justify-content:flex-start;
     display:none;
+    row-gap:6px;
+    flex-direction:column;
 }
 .allConversation section{
-    flex:1 15vw;
-    height:3vh;
+    height:35px;
+    width:90%;
     border:1px solid rgb(0,0,0,0);
     border-radius: 5px;
 }
 .allConversation section p{
-    min-width:15px;
+    max-width:60%;
     overflow:hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -453,8 +455,8 @@ img.sendImg{
     display:flex;
     justify-content: center; /* 水平居中 */
     align-items: center;     /* 垂直居中 */
-    width:16px;
-    height:16px;
+    width:20px;
+    height:20px;
     border-radius: 20%;
     box-shadow: 0px 0px 1px 2px grey;
     background-color:#f44336;
@@ -465,8 +467,8 @@ img.sendImg{
 }
 .deleteWrap{
     display:flex;
-    width:30px;
-    height:30px;
+    width:24px;
+    height:24px;
     align-items:center;
     justify-content:center;
 }
